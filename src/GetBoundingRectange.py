@@ -15,7 +15,10 @@ def BGR2BINARY (image, threshold):
     # Negate the image to get a white background and black character
     binary_image = cv2.bitwise_not(thresh_image)
     
-    return binary_image
+    # Apply opening to remove noise
+    kernel = np.ones((4,4),np.uint8)
+    final_image = cv2.morphologyEx(binary_image, cv2.MORPH_CLOSE, kernel)
+    return final_image
 
 """
 A function to get the bounding rectange of the binary image

@@ -35,21 +35,37 @@ def getBoundingRect(image):
     return bounding_rect_image
 
 
-frame = cv2.imread('archive/Img/img045-047.png')
+"""
+A function to get the bounding box picture resized to a square
+"""
 
+
+def resizeToSquare(boundingBox):
+    box_height, box_width = boundingBox.shape
+    if box_height >= box_width:
+        img = np.zeros((box_height, box_height, 3), dtype=np.uint8)
+        img[:, :] = 255
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        sizeDifference = int((box_height - box_width) / 2)
+        img[:, sizeDifference:sizeDifference + box_width] = boundingBox
+    else:
+        img = np.zeros((box_width, box_width, 3), dtype=np.uint8)
+        img[:, :] = 255
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        sizeDifference = int((box_width - box_height) / 2)
+        img[sizeDifference:sizeDifference + box_height, :] = boundingBox
+    return img
+
+
+"""
+Executable code
+"""
+
+frame = cv2.imread('EnglishHandwrittenCharacters/img001-048.png')
 binary_image = BGR2BINARY(frame, 0)
-
 boundingBox = getBoundingRect(binary_image)
-
-box_height, box_width = boundingBox.shape
-squareSize = box_height if box_height >= box_width else box_width
-
-img = np.zeros((squareSize, squareSize, 3), dtype=np.uint8)
-img[:, :] = (255, 255, 255)
-
-
-cv2.imshow('bounding frame', img)
-cv2.imshow('bounding ', boundingBox)
+img = resizeToSquare(boundingBox)
+cv2.imshow('h', img)
 
 
 cv2.waitKey(0)

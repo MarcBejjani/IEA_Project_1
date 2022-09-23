@@ -65,7 +65,7 @@ frame = cv2.imread('EnglishHandwrittenCharacters/img001-048.png')
 binary_image = BGR2BINARY(frame, 0)
 boundingBox = getBoundingRect(binary_image)
 img = resizeToSquare(boundingBox)
-cv2.imshow('h', img)
+cv2.imshow('Square Frame', img)
 
 
 cv2.waitKey(0)

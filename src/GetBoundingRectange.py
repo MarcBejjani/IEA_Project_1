@@ -1,4 +1,5 @@
 import cv2
+from cv2 import boundingRect
 import numpy as np
 import os
 
@@ -46,6 +47,6 @@ if __name__ == '__main__':
 
     boundingBox = getBoundingRect(binary_image)
     cv2.imshow('bounding frame', boundingBox)
-
+    print(boundingBox)
     cv2.waitKey(0)
     cv2.destroyAllWindows()

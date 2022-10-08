@@ -1,9 +1,8 @@
-https://www.pythonpool.com/cv2-boundingrect/#:~:text=cv2%20boundingrect()%20is%20a,desired%20aspect%20in%20an%20image.
-
-*check opening
 *check blur
 
 add white pixels for image rendering to prespecified pixel size
 
 *research features: how to extract, types...
 *check all available non-parametric learning algos and what works best in character recognition
+
+done :check opening

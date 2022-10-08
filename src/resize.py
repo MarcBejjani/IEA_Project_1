@@ -2,13 +2,14 @@ import cv2
 import numpy as np
 import os
 
+
 """
 A function to get the binary black and white image from a RGB image
 """
 
 
-def BGR2BINARY(image, threshold):
-    # convert to gray sclae
+def BGR2BINARY(image):
+    # convert to gray scale
     gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     # apply the threshold
     blur = cv2.GaussianBlur(gray_image, (5, 5), 0)
@@ -21,7 +22,7 @@ def BGR2BINARY(image, threshold):
 
 
 """
-A function to get the bounding rectange of the binary image
+A function to get the bounding rectangle of the binary image
 """
 
 
@@ -58,15 +59,50 @@ def resizeToSquare(boundingBox):
 
 
 """
-Executable code
+Method to resize square frame image
 """
 
-frame = cv2.imread('EnglishHandwrittenCharacters/img001-048.png')
-binary_image = BGR2BINARY(frame, 0)
-boundingBox = getBoundingRect(binary_image)
-img = resizeToSquare(boundingBox)
-cv2.imshow('Square Frame', img)
+
+def resizeImage(img, height, width):
+    return cv2.resize(img, (height, width))
 
 
-cv2.waitKey(0)
-cv2.destroyAllWindows()
+"""
+Method that combines all the previous methods
+"""
+
+
+def processImage(image, height, width):
+    srcImg = cv2.imread(image)
+    binaryImage = BGR2BINARY(srcImg)
+    boundingRect = getBoundingRect(binaryImage)
+    squareFrame = resizeToSquare(boundingRect)
+    resizedImg = resizeImage(squareFrame, height, width)
+
+    return resizedImg
+
+
+"""
+Save images to directory
+"""
+
+
+def saveImages():
+    for filename in os.listdir('ProcessedImages'):
+        f = os.path.join('ProcessedImages', filename)
+        if os.path.isfile(f):
+            toAdd = processImage(f, 30, 30)
+            cv2.imwrite(f, toAdd)
+
+
+"""
+Main function
+"""
+
+
+def main():
+    saveImages()
+
+
+if __name__ == '__main__':
+    main()

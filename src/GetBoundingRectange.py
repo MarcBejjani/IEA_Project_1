@@ -14,7 +14,6 @@ def BGR2BINARY (image):
     
     # Negate the image to get a white background and black character
     binary_image = cv2.bitwise_not(thresh_image)
-    
     # Apply opening to remove noise
     kernel = np.ones((4,4),np.uint8)
     final_image = cv2.morphologyEx(binary_image, cv2.MORPH_CLOSE, kernel)
@@ -74,7 +73,7 @@ def processImage(image, height, width):
     binaryImage = BGR2BINARY(srcImg)
     boundingRect = getBoundingRect(binaryImage)
     squareFrame = resizeToSquare(boundingRect)
-    resizedImg = resizeImage(boundingRect, height, width)
+    resizedImg = resizeImage(squareFrame, height, width)
 
     return resizedImg
 
@@ -98,8 +97,10 @@ Main function
 
 
 def main():
-    saveImages('BoundingRectangleImages')
+    saveImages('ProcessedImages')
 
 
 if __name__ == '__main__':
-    main()
+    i = 'Img/img001-001.png'
+    g = processImage(i, 30, 30)
+

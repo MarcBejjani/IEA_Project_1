@@ -3,6 +3,7 @@ import numpy as np
 import csv
 import pandas as pd
 from skimage.feature import hog
+from GetBoundingRectange import BGR2BINARY
 
 
 def getListOfCharacters():
@@ -17,8 +18,9 @@ def getListOfCharacters():
 def getBlackToWhiteRatio(listOfCharacters):
     for img in listOfCharacters:
         image = img['image']
-        processedImg = 'ProcessedImages' + image[image.index('/'):]
+        processedImg = 'BoundingRectangleImages' + image[image.index('/'):]
         processed = cv2.imread(processedImg)
+        processed = BGR2BINARY(processed)
         blackToWhiteRatio = np.sum(processed == 0) / np.sum(processed == 255)
         img['blackToWhite'] = blackToWhiteRatio
 
@@ -26,9 +28,9 @@ def getBlackToWhiteRatio(listOfCharacters):
 def horizontalSymmetry(listOfCharacters):
     for img in listOfCharacters:
         image = img['image']
-        processedImg = 'ProcessedImages' + image[image.index('/'):]
+        processedImg = 'BoundingRectangleImages' + image[image.index('/'):]
         processed = cv2.imread(processedImg)
-        print(processed)
+        processed = BGR2BINARY(processed)
         blackTop = np.sum(processed[0:15, :] == 0)
         blackBottom = np.sum(processed[15:30, :] == 0)
         ratio = blackTop / blackBottom
@@ -41,8 +43,9 @@ def horizontalSymmetry(listOfCharacters):
 def inverseSymmetry(listOfCharacters):
     for img in listOfCharacters:
         image = img['image']
-        processedImg = 'ProcessedImages' + image[image.index('/'):]
+        processedImg = 'BoundingRectangleImages' + image[image.index('/'):]
         processed = cv2.imread(processedImg)
+        processed = BGR2BINARY(processed)
         blackTopLeft = np.sum(processed[0:15, 0:15] == 0)
         blackTopRight = np.sum(processed[0:15, 15:30] == 0)
         blackBottomLeft = np.sum(processed[15:30, 0:15] == 0) + 0.000000000000001
@@ -57,10 +60,11 @@ def inverseSymmetry(listOfCharacters):
 def verticalSymmetry(listOfCharacters):
     for img in listOfCharacters:
         image = img['image']
-        processedImg = 'ProcessedImages' + image[image.index('/'):]
+        processedImg = 'BoundingRectangleImages' + image[image.index('/'):]
         processed = cv2.imread(processedImg)
+        processed = BGR2BINARY(processed)
         blackLeft = np.sum(processed[:, 0:15] == 0)
-        blackRight = np.sum(processed[:, 15:30] == 0)
+        blackRight = np.sum(processed[:, 15:30] == 0) + 0.0000000000000000001
         ratio = blackLeft / blackRight
         if 0.9 <= ratio <= 1.1:
             img['Vertical Symmetry'] = '1'
@@ -71,8 +75,10 @@ def verticalSymmetry(listOfCharacters):
 def getAspectRatio(listOfCharacters):
     for img in listOfCharacters:
         image = img['image']
-        processedImg = 'ProcessedImages' + image[image.index('/'):]
+        processedImg = 'BoundingRectangleImages' + image[image.index('/'):]
         processed = cv2.imread(processedImg)
+        processed = BGR2BINARY(processed)
+
         x1, y1, w, h = cv2.boundingRect(processed)
         aspectRatio = w / h
         img['Aspect Ratio'] = aspectRatio
@@ -85,29 +91,43 @@ def normalize_2d(matrix):
     return normalized_matrix
 
 
-def projectionHistogram(image):
-    img = cv2.bitwise_not(image)
-    dimensions = img.shape
+def projectionHistogram(listOfCharacters):
+    for img in listOfCharacters:
+        src = img['image']
+        image = 'BoundingRectangleImages' + src[src.index('/'):]
+        image = cv2.imread(image)
 
-    x_axis = np.arange(0, dimensions[1])
-    column_sum = np.sum(img, axis=0)  # sum the values in each column of the img
-    row_sum = np.sum(img, axis=1) # sum the values in each row of the img
+        image = cv2.bitwise_not(image)
+        #dimensions = image.shape
 
-    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)  # convert BGR to RBG since open cv is BGR and matplot is RGB
+        #x_axis = np.arange(0, dimensions[1])
+        column_sum = np.sum(image, axis=0)  # sum the values in each column of the img
+        row_sum = np.sum(image, axis=1)  # sum the values in each row of the img
 
-    column_sum = normalize_2d(column_sum)
-    row_sum = normalize_2d(row_sum)
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)  # convert BGR to RBG since open cv is BGR and matplot is RGB
 
-    #projectionHistogramPlot(img, x_axis, column_sum, row_sum)
-    return column_sum, row_sum
+        column_sum = normalize_2d(column_sum)
+        row_sum = normalize_2d(row_sum)
+
+        flattenedColumnSum = column_sum.flatten()
+        flattenedRowSum = row_sum.flatten()
+
+        counter = 1
+        for value in flattenedColumnSum:
+            img[f'Column Histogram {counter}'] = value
+            counter += 1
+        counter = 1
+        for value in flattenedRowSum:
+            img[f'Row Histogram {counter}'] = value
+            counter += 1
 
 
 def profile(listOfCharacters):
     for img in listOfCharacters:
         imge = img['image']
-        image = 'ProcessedImages' + imge[imge.index('/'):]
-        print(image)
+        image = 'BoundingRectangleImages' + imge[imge.index('/'):]
         image = cv2.imread(image)
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         dimensions = image.shape  # (m,n) m:rows/ n:columns
         image = cv2.bitwise_not(image)
 
@@ -182,19 +202,37 @@ def profile(listOfCharacters):
 
         y_axis = np.arange(0, dimensions[0])
         # profilePlot(x_axis, y_axis, bottom, top, left, right)
-        img['Bottom Profile'] = bottom
-        img['Top Profile'] = top
-        img['Left Profile'] = left
-        img['Right Profile'] = right
+
+        counter = 1
+        for white in bottom:
+            img[f'Bottom {counter}'] = white
+            counter += 1
+        counter = 1
+        for white in top:
+            img[f'Top {counter}'] = white
+            counter += 1
+        counter = 1
+        for white in left:
+            img[f'Left {counter}'] = white
+            counter += 1
+        counter = 1
+        for white in right:
+            img[f'Right {counter}'] = white
+            counter += 1
 
 
-def HOG(image):
-    resized_img = cv2.resize(image, (128, 64))
-    hog_feature, image_hog = hog(resized_img, orientations=8, pixels_per_cell=(16, 16), cells_per_block=(4, 4), visualize=True) #Set visualize to true if we need to see the image
-
-    # plt.imshow(hog_image, cmap="gray")
-    # plt.show()
-    return hog_feature
+def HOG(listOfCharacters):
+    for img in listOfCharacters:
+        image = img['image']
+        processedImg = 'BoundingRectangleImages' + image[image.index('/'):]
+        processed = cv2.imread(processedImg)
+        processed = BGR2BINARY(processed)
+        resized_img = cv2.resize(processed, (128, 64))
+        hog_feature, image_hog = hog(resized_img, orientations=8, pixels_per_cell=(16, 16), cells_per_block=(4, 4), visualize=True)  # Set visualize to true if we need to see the image
+        counter = 1
+        for value in hog_feature:
+            img[f'HOG {counter}'] = value
+            counter += 1
 
 
 def main():
@@ -204,13 +242,14 @@ def main():
     verticalSymmetry(chars)
     inverseSymmetry(chars)
     profile(chars)
+    projectionHistogram(chars)
+    HOG(chars)
     #getAspectRatio(chars)
-    print(chars)
+    #print(chars)
     return chars
 
 
 if __name__ == '__main__':
-    main()
-    # set = main()
-    # df = pd.DataFrame(set)
-    # df.to_csv('dataSet.csv', index=False, header=True)
+    set = main()
+    df = pd.DataFrame(set)
+    df.to_csv('dataSet.csv', index=False, header=True)

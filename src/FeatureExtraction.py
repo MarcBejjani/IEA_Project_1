@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 import csv
 import pandas as pd
-from matplotlib import pyplot as plt
+from skimage.feature import hog
 
 
 def getListOfCharacters():
@@ -77,48 +77,51 @@ def getAspectRatio(listOfCharacters):
         img['Aspect Ratio'] = aspectRatio
 
 
-def projectionHistogram (image):
-    y_axis = np.sum(image, axis=0) #sum the values in each column of the image
+def normalize_2d(matrix):
+    norm = np.linalg.norm(matrix)
+    normalized_matrix = matrix/norm
 
-    dimensions = image.shape
-    print(dimensions)
+    return normalized_matrix
+
+
+def projectionHistogram(image):
+    img = cv2.bitwise_not(image)
+    dimensions = img.shape
+
     x_axis = np.arange(0, dimensions[1])
+    column_sum = np.sum(img, axis=0)  # sum the values in each column of the img
+    row_sum = np.sum(img, axis=1) # sum the values in each row of the img
 
-    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)  # convert BGR to RBG since open cv is BGR and matplot is RGB
-    plt.subplot(2, 1, 1)
-    plt.imshow(image)
-    #cv2.imshow("final image", image)
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)  # convert BGR to RBG since open cv is BGR and matplot is RGB
 
-    plt.subplot(2,1,2)
-    plt.bar(x_axis, y_axis, color = 'red', width= 0.4)
-    plt.show()
+    column_sum = normalize_2d(column_sum)
+    row_sum = normalize_2d(row_sum)
 
-    return x_axis, y_axis
+    #projectionHistogramPlot(img, x_axis, column_sum, row_sum)
+    return column_sum, row_sum
 
 
-def profile (image):
+def profile(image):
     dimensions = image.shape  # (m,n) m:rows/ n:columns
-    #print(dimensions)
+    image = cv2.bitwise_not(image)
+
     """
             #####   Bottom  #####
     """
     bottom = []
     bottom_sum = 0
 
-    for j in range(dimensions[1]): #columns
-        for i in reversed(range(dimensions[0])): #rows
+    for j in range(dimensions[1]):  # columns
+        for i in reversed(range(dimensions[0])):  # rows
             if image[i][j] == 0:
                 bottom_sum = bottom_sum + 1
-            elif image[i][j] ==255:
+            elif image[i][j] == 255:
                 break
         bottom = np.append(bottom, bottom_sum)
         bottom_sum = 0
 
-    x_axis = np.arange(0,dimensions[1])
-
-    plt.subplot(1, 4, 1)
-    plt.bar(x_axis, bottom, color='red', width=0.5)
-    plt.title("bottom profile")
+    x_axis = np.arange(0, dimensions[1]) #creating a matrix of values ranging from 0 till dimension[1] (width of image)
+    bottom = normalize_2d(bottom)
 
     """
             #####   TOP  #####
@@ -126,20 +129,15 @@ def profile (image):
     top = []
     top_sum = 0
 
-    for j in range(dimensions[1]): #columns
-        for i in range(dimensions[0]): #rows
+    for j in range(dimensions[1]):  # columns
+        for i in range(dimensions[0]):  # rows
             if image[i][j] == 0:
                 top_sum = top_sum + 1
             elif image[i][j] == 255:
                 break
-        # print(f"bottom_sum {bottom_sum}")
         top = np.append(top, top_sum)
-        # print(f"bottom {bottom}")
         top_sum = 0
-
-    plt.subplot(1, 4, 2)
-    plt.bar(x_axis, top, color='red', width=0.5)
-    plt.title("top profile")
+    top = normalize_2d(top)
 
     """
             #####  RIGHT  #####
@@ -147,8 +145,8 @@ def profile (image):
     right = []
     right_sum = 0
 
-    for i in range(dimensions[0]): # rows
-        for j in reversed(range(dimensions[1])): #columns
+    for i in range(dimensions[0]):  # rows
+        for j in reversed(range(dimensions[1])):  # columns
             if image[i][j] == 0:
                 right_sum = right_sum + 1
             elif image[i][j] == 255:
@@ -156,11 +154,7 @@ def profile (image):
         right = np.append(right, right_sum)
         right_sum = 0
 
-    y_axis = np.arange(0, dimensions[0])
-
-    plt.subplot(1, 4, 3)
-    plt.bar(y_axis, right, color='red', width=0.5)
-    plt.title("right profile")
+    right = normalize_2d(right)
 
     """
             #####  left #####
@@ -177,9 +171,21 @@ def profile (image):
         left = np.append(left, left_sum)
         left_sum = 0
 
-    y_axis = np.arange(0, dimensions[0])
+    left = normalize_2d(left)
 
-    return x_axis, y_axis, bottom, top, right, left
+    y_axis = np.arange(0, dimensions[0])
+    #profilePlot(x_axis, y_axis, bottom, top, left, right)
+
+    return bottom, top, left, right #, x_axis, y_axis
+
+
+def HOG(image):
+    resized_img = cv2.resize(image, (128, 64))
+    hog_feature, image_hog = hog(resized_img, orientations=8, pixels_per_cell=(16, 16), cells_per_block=(4, 4), visualize=True) #Set visualize to true if we need to see the image
+
+    # plt.imshow(hog_image, cmap="gray")
+    # plt.show()
+    return hog_feature
 
 
 def main():

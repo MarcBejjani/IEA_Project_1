@@ -28,6 +28,7 @@ def horizontalSymmetry(listOfCharacters):
         image = img['image']
         processedImg = 'ProcessedImages' + image[image.index('/'):]
         processed = cv2.imread(processedImg)
+        print(processed)
         blackTop = np.sum(processed[0:15, :] == 0)
         blackBottom = np.sum(processed[15:30, :] == 0)
         ratio = blackTop / blackBottom
@@ -101,82 +102,90 @@ def projectionHistogram(image):
     return column_sum, row_sum
 
 
-def profile(image):
-    dimensions = image.shape  # (m,n) m:rows/ n:columns
-    image = cv2.bitwise_not(image)
+def profile(listOfCharacters):
+    for img in listOfCharacters:
+        imge = img['image']
+        image = 'ProcessedImages' + imge[imge.index('/'):]
+        print(image)
+        image = cv2.imread(image)
+        dimensions = image.shape  # (m,n) m:rows/ n:columns
+        image = cv2.bitwise_not(image)
 
-    """
-            #####   Bottom  #####
-    """
-    bottom = []
-    bottom_sum = 0
-
-    for j in range(dimensions[1]):  # columns
-        for i in reversed(range(dimensions[0])):  # rows
-            if image[i][j] == 0:
-                bottom_sum = bottom_sum + 1
-            elif image[i][j] == 255:
-                break
-        bottom = np.append(bottom, bottom_sum)
+        """
+                #####   Bottom  #####
+        """
+        bottom = []
         bottom_sum = 0
 
-    x_axis = np.arange(0, dimensions[1]) #creating a matrix of values ranging from 0 till dimension[1] (width of image)
-    bottom = normalize_2d(bottom)
+        for j in range(dimensions[1]):  # columns
+            for i in reversed(range(dimensions[0])):  # rows
+                if image[i][j] == 0:
+                    bottom_sum = bottom_sum + 1
+                elif image[i][j] == 255:
+                    break
+            bottom = np.append(bottom, bottom_sum)
+            bottom_sum = 0
 
-    """
-            #####   TOP  #####
-    """
-    top = []
-    top_sum = 0
+        x_axis = np.arange(0, dimensions[
+            1])  # creating a matrix of values ranging from 0 till dimension[1] (width of image)
+        bottom = normalize_2d(bottom)
 
-    for j in range(dimensions[1]):  # columns
-        for i in range(dimensions[0]):  # rows
-            if image[i][j] == 0:
-                top_sum = top_sum + 1
-            elif image[i][j] == 255:
-                break
-        top = np.append(top, top_sum)
+        """
+                #####   TOP  #####
+        """
+        top = []
         top_sum = 0
-    top = normalize_2d(top)
 
-    """
-            #####  RIGHT  #####
-    """
-    right = []
-    right_sum = 0
+        for j in range(dimensions[1]):  # columns
+            for i in range(dimensions[0]):  # rows
+                if image[i][j] == 0:
+                    top_sum = top_sum + 1
+                elif image[i][j] == 255:
+                    break
+            top = np.append(top, top_sum)
+            top_sum = 0
+        top = normalize_2d(top)
 
-    for i in range(dimensions[0]):  # rows
-        for j in reversed(range(dimensions[1])):  # columns
-            if image[i][j] == 0:
-                right_sum = right_sum + 1
-            elif image[i][j] == 255:
-                break
-        right = np.append(right, right_sum)
+        """
+                #####  RIGHT  #####
+        """
+        right = []
         right_sum = 0
 
-    right = normalize_2d(right)
+        for i in range(dimensions[0]):  # rows
+            for j in reversed(range(dimensions[1])):  # columns
+                if image[i][j] == 0:
+                    right_sum = right_sum + 1
+                elif image[i][j] == 255:
+                    break
+            right = np.append(right, right_sum)
+            right_sum = 0
 
-    """
-            #####  left #####
-    """
-    left = []
-    left_sum = 0
+        right = normalize_2d(right)
 
-    for i in range(dimensions[0]):  # rows
-        for j in range(dimensions[1]):  # columns
-            if image[i][j] == 0:
-                left_sum = left_sum + 1
-            elif image[i][j] == 255:
-                break
-        left = np.append(left, left_sum)
+        """
+                #####  left #####
+        """
+        left = []
         left_sum = 0
 
-    left = normalize_2d(left)
+        for i in range(dimensions[0]):  # rows
+            for j in range(dimensions[1]):  # columns
+                if image[i][j] == 0:
+                    left_sum = left_sum + 1
+                elif image[i][j] == 255:
+                    break
+            left = np.append(left, left_sum)
+            left_sum = 0
 
-    y_axis = np.arange(0, dimensions[0])
-    #profilePlot(x_axis, y_axis, bottom, top, left, right)
+        left = normalize_2d(left)
 
-    return bottom, top, left, right #, x_axis, y_axis
+        y_axis = np.arange(0, dimensions[0])
+        # profilePlot(x_axis, y_axis, bottom, top, left, right)
+        img['Bottom Profile'] = bottom
+        img['Top Profile'] = top
+        img['Left Profile'] = left
+        img['Right Profile'] = right
 
 
 def HOG(image):
@@ -194,12 +203,14 @@ def main():
     horizontalSymmetry(chars)
     verticalSymmetry(chars)
     inverseSymmetry(chars)
+    profile(chars)
     #getAspectRatio(chars)
     print(chars)
     return chars
 
 
 if __name__ == '__main__':
-    set = main()
-    df = pd.DataFrame(set)
-    df.to_csv('dataSet.csv', index=False, header=True)
+    main()
+    # set = main()
+    # df = pd.DataFrame(set)
+    # df.to_csv('dataSet.csv', index=False, header=True)

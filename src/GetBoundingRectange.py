@@ -5,7 +5,7 @@ import os
 """
 A function to get the binary black and white image from a RGB image
 """
-def BGR2BINARY (image, threshold):
+def BGR2BINARY (image):
     # convert to gray sclae
     gray_image = cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
     # apply the threshold
@@ -71,10 +71,10 @@ Method that does all the previous steps in one function
 
 def processImage(image, height, width):
     srcImg = cv2.imread(image)
-    binaryImage = GetBoundingRectange.BGR2BINARY(srcImg)
-    boundingRect = GetBoundingRectange.getBoundingRect(binaryImage)
+    binaryImage = BGR2BINARY(srcImg)
+    boundingRect = getBoundingRect(binaryImage)
     squareFrame = resizeToSquare(boundingRect)
-    resizedImg = resizeImage(squareFrame, height, width)
+    resizedImg = resizeImage(boundingRect, height, width)
 
     return resizedImg
 
@@ -85,11 +85,8 @@ Save images to directory
 
 
 def saveImages(dirName):
-    if not os.path.exists('./' + dirName):
-        os.makedirs('./' + dirName)
-
     for filename in os.listdir(dirName):
-        f = os.path.join(dirName, filename)
+        f = os.path.join('./' + dirName, filename)
         if os.path.isfile(f):
             toAdd = processImage(f, 30, 30)
             cv2.imwrite(f, toAdd)
@@ -101,7 +98,7 @@ Main function
 
 
 def main():
-    saveImages('ProcessedImages')
+    saveImages('BoundingRectangleImages')
 
 
 if __name__ == '__main__':

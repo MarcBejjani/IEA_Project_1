@@ -98,6 +98,7 @@ def projectionHistogram(listOfCharacters):
         image = cv2.imread(image)
 
         image = cv2.bitwise_not(image)
+        image = BGR2BINARY(image)
         #dimensions = image.shape
 
         #x_axis = np.arange(0, dimensions[1])
@@ -244,8 +245,7 @@ def main():
     profile(chars)
     projectionHistogram(chars)
     HOG(chars)
-    #getAspectRatio(chars)
-    #print(chars)
+    getAspectRatio(chars)
     return chars
 
 

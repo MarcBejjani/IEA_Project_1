@@ -53,7 +53,10 @@ def verticalSymmetry(image):
 
 
 def getAspectRatio(image):
-    h, w = image.shape
+    srcImage = cv2.imread(f'Img/{image}')
+    binaryImage = BGR2BINARY(srcImage)
+    boundingRect = getBoundingRect(binaryImage)
+    w, h = boundingRect.shape
     aspectRatio = h / w
 
     return aspectRatio
@@ -185,7 +188,7 @@ def featuresToCSV(lisOfCharacters, directory):  # directory of the cropped image
         img['Horizontal Symmetry'] = horizontalSymmetry(image)
         img['Inverse Symmetry'] = inverseSymmetry(image)
         img['Vertical Symmetry'] = verticalSymmetry(image)
-        img['Aspect Ratio'] = getAspectRatio(boundingRectangleImage)
+        img['Aspect Ratio'] = getAspectRatio(image_name)
 
         # Projection histogram
         column_sum, row_sum = getProjectionHistogram(boundingRectangleImage)

@@ -5,8 +5,9 @@ import os
 """
 A function to get the binary black and white image from a RGB image
 """
+
 def BGR2BINARY (image):
-    # convert to gray sclae
+    # convert to gray scale
     gray_image = cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
     # apply the threshold
     blur = cv2.GaussianBlur(gray_image,(5,5),0)
@@ -16,7 +17,7 @@ def BGR2BINARY (image):
     binary_image = cv2.bitwise_not(thresh_image)
     # Apply opening to remove noise
     kernel = np.ones((4,4),np.uint8)
-    final_image = cv2.morphologyEx(binary_image, cv2.MORPH_CLOSE, kernel)
+    final_image = cv2.morphologyEx(binary_image, cv2.MORPH_OPEN, kernel)
     return final_image
 
 """
@@ -72,8 +73,8 @@ def processImage(image, height, width):
     srcImg = cv2.imread(image)
     binaryImage = BGR2BINARY(srcImg)
     boundingRect = getBoundingRect(binaryImage)
-    squareFrame = resizeToSquare(boundingRect)
-    resizedImg = resizeImage(squareFrame, height, width)
+    # squareFrame = resizeToSquare(boundingRect)
+    resizedImg = resizeImage(boundingRect, height, width)
 
     return resizedImg
 
@@ -97,10 +98,9 @@ Main function
 
 
 def main():
-    saveImages('ProcessedImages')
+    saveImages('BoundingRectangleImages')
 
 
 if __name__ == '__main__':
-    i = 'Img/img001-001.png'
-    g = processImage(i, 30, 30)
+    main()
 

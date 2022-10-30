@@ -116,45 +116,61 @@ def getListOfCharacters():
             listOfCharacters.append(line)
 
     return listOfCharacters
+
 """
 Main function
 """
 def main():
-    dirname, filename = os.path.split(os.path.abspath(__file__))
-   
-    dir = dirname+'\EnglishHandwrittenCharacters\img045-021.png'
-    BoundingRect = processImage(dir)
-    cv2.waitKey(0)
-
+    dirname, filename = os.path.split(os.path.abspath(__file__))  
+    pass
 
 if __name__ == '__main__':
     dirname, filename = os.path.split(os.path.abspath(__file__))
     list_of_Characters = getListOfCharacters()
 
-    for idx, img in enumerate(list_of_Characters):
-        print(idx)
-        image_name = list_of_Characters[idx]['image']  # image name
-        image_name = image_name[image_name.index('/') + 1:]
-        print(image_name)
-        dir = dirname+f'\EnglishHandwrittenCharacters\{image_name}'
+    # for idx, img in enumerate(list_of_Characters):
+    #     print(idx)
+    #     image_name = list_of_Characters[idx]['image']  # image name
+    #     image_name = image_name[image_name.index('/') + 1:]
+    #     print(image_name)
+    #     dir = dirname+f'\EnglishHandwrittenCharacters\{image_name}' 
+    #     boundingRect = processImage(dir)
+    #     boundingRect = cv2.resize(boundingRect, (30,30))
+    #     save_dir = dirname+f'\SquaredWithNoWhiteAdded\{image_name}'
+    #     cv2.imwrite(save_dir, boundingRect)
     
-        boundingRect = processImage(dir)
-
-        # cv2.imshow('BoundingRect',boundingRect)
-        # cv2.waitKey(0)
-        # cv2.destroyAllWindows()
-
-        save_dir = dirname+f'\BoundingBoxes\{image_name}'
-        cv2.imwrite(save_dir, boundingRect)
-    
-    # image_name = list_of_Characters[2438]['image']
+    #image_name = list_of_Characters[65]['image']
     # print(image_name)
-    # image_name = image_name[image_name.index('/') + 1:]
-    # dirname2 = dirname+f'\EnglishHandwrittenCharacters\{image_name}'
-    # boundingRect = processImage(dirname2)
+    #image_name = image_name[image_name.index('/') + 1:]
+    # dir= dirname+f'\EnglishHandwrittenCharacters\{image_name}'
+    # boundingRect = processImage(dir)
+    # boundingRect = resizeToSquare(boundingRect)
+    # boundingRect = cv2.resize(boundingRect, (30,30))
+    # print(boundingRect.shape)
     # cv2.imshow('BoundingRect',boundingRect)
     # cv2.waitKey(0)
     # cv2.destroyAllWindows()
-    # save_dir = dirname+f'\BoundingBoxes\{image_name}'
+    # save_dir = dirname+f'\SquaredWithWhiteAdded\{image_name}'
     # print(save_dir)
     # cv2.imwrite(save_dir, boundingRect)
+
+
+    # boundingRect1 = cv2.resize(boundingRect, (30,30))
+    # print(boundingRect[4])
+    # print(np.sum(boundingRect==0))
+    # cv2.imshow('frame',boundingRect1)
+    # boundingRect2 = resizeToSquare(boundingRect)
+    # boundingRect2 = cv2.resize(boundingRect2, (30,30))
+    # cv2.imshow('frame2', boundingRect2)
+    # cv2.waitKey(0)
+    # blackToWhiteRatio = np.sum(boundingRect == 0) / (np.sum(boundingRect == 255) + 0.00000000000000001)
+    # blackRatio = np.sum(boundingRect == 0) / (np.sum(boundingRect == 255) + 0.00000000000000001)
+    # print(np.count_nonzero(boundingRect))
+    # print(blackToWhiteRatio)
+
+    # boundingRectangleImage = cv2.imread(dirname+f'\BoundingBoxes\{image_name}')
+    # boundingRectangleImage = cv2.cvtColor(boundingRectangleImage,cv2.COLOR_BGR2GRAY)
+    # cv2.imshow('frame',boundingRectangleImage)
+    # cv2.waitKey(0)
+    # print(boundingRectangleImage.shape)
+    

@@ -7,9 +7,11 @@ import pandas as pd
 
 def getBlackToWhiteRatio(image):
     blackToWhiteRatio = np.sum(image == 0) / (np.sum(image == 255) + 0.00000000000000001)
-
     return blackToWhiteRatio
 
+def getBlackRatio(image):
+    blackRatio = np.sum(image==0)/(np.sum(image == 0) +np.sum(image == 255))
+    return blackRatio
 
 def horizontalSymmetry(image):
     blackTop = np.sum(image[0:15, :] == 0)
@@ -53,10 +55,7 @@ def verticalSymmetry(image):
 
 
 def getAspectRatio(image):
-    srcImage = cv2.imread(f'Img/{image}')
-    binaryImage = BGR2BINARY(srcImage)
-    boundingRect = getBoundingRect(binaryImage)
-    w, h = boundingRect.shape
+    w, h = image.shape
     aspectRatio = h / w
 
     return aspectRatio
@@ -171,27 +170,37 @@ def getListOfCharacters():
     return listOfCharacters
 
 
-def featuresToCSV(lisOfCharacters, directory):  # directory of the cropped images
-
+def featuresToCSV(lisOfCharacters):  # directory of the cropped images
+    dirname, filename = os.path.split(os.path.abspath(__file__))
+    
     features = []
 
     for idx, img in tqdm(enumerate(lisOfCharacters)):
+
         image_name = lisOfCharacters[idx]['image']  # image name
         image_name = image_name[image_name.index('/') + 1:]
-        boundingRectangleImage = cv2.imread(f'BoundingRectangleImages/{image_name}')
-        boundingRectangleImage = BGR2BINARY(boundingRectangleImage)
 
-        image = cv2.imread(os.path.join(directory, image_name))
-        image = BGR2BINARY(image)
+        dirResizedWhite = dirname+f'\SquaredWithWhiteAdded\{image_name}'
+        dirResizedNoWhite = dirname+f'\SquaredWithNoWhiteAdded\{image_name}'
+        dirBounding = dirname+f'\BoundingBoxes\{image_name}'
 
-        img['BlackToWhite'] = getBlackToWhiteRatio(image)
-        img['Horizontal Symmetry'] = horizontalSymmetry(image)
-        img['Inverse Symmetry'] = inverseSymmetry(image)
-        img['Vertical Symmetry'] = verticalSymmetry(image)
-        img['Aspect Ratio'] = getAspectRatio(image_name)
+        boundingRectangleImage = cv2.imread(dirBounding)
+        boundingRectangleImage = cv2.cvtColor(boundingRectangleImage,cv2.COLOR_BGR2GRAY)
+
+        ResizedBoundingWithWhite = cv2.imread(dirResizedWhite)
+        ResizedBoundingWithWhite = cv2.cvtColor(ResizedBoundingWithWhite,cv2.COLOR_BGR2GRAY)
+
+        ResizedBoundingWithNoWhite = cv2.imread(dirResizedNoWhite)
+        ResizedBoundingWithNoWhite = cv2.cvtColor(ResizedBoundingWithNoWhite,cv2.COLOR_BGR2GRAY)
+
+        img['BlackToWhite'] = getBlackToWhiteRatio(boundingRectangleImage)
+        img['Horizontal Symmetry'] = horizontalSymmetry(boundingRectangleImage)
+        img['Inverse Symmetry'] = inverseSymmetry(boundingRectangleImage)
+        img['Vertical Symmetry'] = verticalSymmetry(boundingRectangleImage)
+        img['Aspect Ratio'] = getAspectRatio(boundingRectangleImage)
 
         # Projection histogram
-        column_sum, row_sum = getProjectionHistogram(boundingRectangleImage)
+        column_sum, row_sum = getProjectionHistogram(ResizedBoundingWithNoWhite)
         for idx1, value in enumerate(column_sum):
             img[f'Column Histogram {idx1}'] = value
 
@@ -199,7 +208,7 @@ def featuresToCSV(lisOfCharacters, directory):  # directory of the cropped image
             img[f'Row Histogram {idx1}'] = value
 
         # Profile
-        bottom, top, left, right = getProfile(boundingRectangleImage)
+        bottom, top, left, right = getProfile(ResizedBoundingWithNoWhite)
         for idx1, value in enumerate(bottom):
             img[f'Bottom Profile {idx1}'] = value
 
@@ -213,7 +222,7 @@ def featuresToCSV(lisOfCharacters, directory):  # directory of the cropped image
             img[f'Right Profile {idx1}'] = value
 
         # Hog
-        image_hog = getHOG(boundingRectangleImage)
+        image_hog = getHOG(ResizedBoundingWithNoWhite)
         for idx1, value in enumerate(image_hog):
             img[f'HOG {idx1}'] = value
 
@@ -221,15 +230,14 @@ def featuresToCSV(lisOfCharacters, directory):  # directory of the cropped image
 
         keys = features[0].keys()
     df = pd.DataFrame(features)
-    df.to_csv('FeatureSet.csv', index=False, header=True)
+    df.to_csv('FeaturesWithNoWhite.csv', index=False, header=True)
 
 
 def saveToCSV():
-    directory = r'ProcessedImages'  # directory of the processed images
     list_of_Characters = getListOfCharacters()
-    featuresToCSV(list_of_Characters, directory)
+    featuresToCSV(list_of_Characters)
 
 
 if __name__ == '__main__':
-    # saveToCSV()
-    list_of_Characters = getListOfCharacters()
+    saveToCSV()
+    

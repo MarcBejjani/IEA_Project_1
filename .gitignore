@@ -8,3 +8,7 @@ Img
 BoundingRectangleImages
 ProcessedImages
 BoundingBoxes
+SquaredWithNoWhiteAdded
+SquaredWithWhiteAdded
+FeaturesWithNoWhite.csv
+FeaturesWithWhite.csv

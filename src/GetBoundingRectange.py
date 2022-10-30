@@ -32,14 +32,14 @@ def getBoundingRect(image):
     bounding_rect_image = cv2.bitwise_not(bounding_rect_image)
     return bounding_rect_image
 
-def getCountourRect(image):
-    countours, hir = cv2.findContours(image,1, cv2.CHAIN_APPROX_SIMPLE )
-    print('number of count: '+str(len(countours)))
-    if len(countours) > 1:     
-        countours, _ = cv2.findContours(image,cv2.RETR_LIST,cv2.CHAIN_APPROX_SIMPLE)      
+def getContourRect(image):
+    contours, hir = cv2.findContours(image,1, cv2.CHAIN_APPROX_SIMPLE )
+    print('number of count: '+str(len(contours)))
+    if len(contours) > 1:
+        contours, _ = cv2.findContours(image,cv2.RETR_LIST,cv2.CHAIN_APPROX_SIMPLE)
         h = 0
         img = 0
-        for c in countours:
+        for c in contours:
             x, y, w, h_temp = cv2.boundingRect(c)
             if h_temp > h:
                 h = h_temp
@@ -93,7 +93,7 @@ def processImage(dir):
     else:
         print('not i neither j') 
         binaryImage = BGR2BINARY(srcImg)
-        boundingRect = getCountourRect(binaryImage)
+        boundingRect = getContourRect(binaryImage)
 
     return boundingRect
 
@@ -128,20 +128,21 @@ if __name__ == '__main__':
     dirname, filename = os.path.split(os.path.abspath(__file__))
     list_of_Characters = getListOfCharacters()
 
-    # for idx, img in enumerate(list_of_Characters):
-    #     print(idx)
-    #     image_name = list_of_Characters[idx]['image']  # image name
-    #     image_name = image_name[image_name.index('/') + 1:]
-    #     print(image_name)
-    #     dir = dirname+f'\EnglishHandwrittenCharacters\{image_name}' 
-    #     boundingRect = processImage(dir)
-    #     boundingRect = cv2.resize(boundingRect, (30,30))
-    #     save_dir = dirname+f'\SquaredWithNoWhiteAdded\{image_name}'
-    #     cv2.imwrite(save_dir, boundingRect)
+    for idx, img in enumerate(list_of_Characters):
+        # print(idx)
+        image_name = list_of_Characters[idx]['image']  # image name
+        image_name = image_name[image_name.index('/') + 1:]
+        # print(image_name)
+        dir = dirname+f'\EnglishHandwrittenCharacters\{image_name}'
+        boundingRect = processImage(dir)
+        boundingRect = resizeToSquare(boundingRect)
+        boundingRect = cv2.resize(boundingRect, (30,30))
+        save_dir = dirname+f'\SquaredWithWhiteAdded\{image_name}'
+        cv2.imwrite(save_dir, boundingRect)
     
-    #image_name = list_of_Characters[65]['image']
+    # image_name = list_of_Characters[65]['image']
     # print(image_name)
-    #image_name = image_name[image_name.index('/') + 1:]
+    # image_name = image_name[image_name.index('/') + 1:]
     # dir= dirname+f'\EnglishHandwrittenCharacters\{image_name}'
     # boundingRect = processImage(dir)
     # boundingRect = resizeToSquare(boundingRect)
@@ -150,7 +151,7 @@ if __name__ == '__main__':
     # cv2.imshow('BoundingRect',boundingRect)
     # cv2.waitKey(0)
     # cv2.destroyAllWindows()
-    # save_dir = dirname+f'\SquaredWithWhiteAdded\{image_name}'
+    # save_dir = dirname+f'\BoundingBoxes\{image_name}'
     # print(save_dir)
     # cv2.imwrite(save_dir, boundingRect)
 

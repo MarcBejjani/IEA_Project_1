@@ -228,7 +228,6 @@ def featuresToCSV(lisOfCharacters):  # directory of the cropped images
 
         features.append(img)
 
-        keys = features[0].keys()
     df = pd.DataFrame(features)
     df.to_csv('FeaturesWithNoWhite.csv', index=False, header=True)
 

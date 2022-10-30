@@ -1,11 +1,11 @@
 import cv2
 import numpy as np
 import os
+import tqdm, csv
 
 """
 A function to get the binary black and white image from a RGB image
 """
-
 def BGR2BINARY (image):
     # convert to gray scale
     gray_image = cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
@@ -16,7 +16,7 @@ def BGR2BINARY (image):
     # Negate the image to get a white background and black character
     binary_image = cv2.bitwise_not(thresh_image)
     # Apply opening to remove noise
-    kernel = np.ones((4,4),np.uint8)
+    kernel = np.ones((10,10),np.uint8)
     final_image = cv2.morphologyEx(binary_image, cv2.MORPH_OPEN, kernel)
     return final_image
 
@@ -25,19 +25,37 @@ A function to get the bounding rectange of the binary image
 """
 def getBoundingRect(image):
     x1,y1,w,h = cv2.boundingRect(image)
+    
     x2 = x1+w
     y2 = y1+h
-
     bounding_rect_image = image [y1:y2,x1:x2]
     bounding_rect_image = cv2.bitwise_not(bounding_rect_image)
     return bounding_rect_image
 
+def getCountourRect(image):
+    countours, hir = cv2.findContours(image,1, cv2.CHAIN_APPROX_SIMPLE )
+    print('number of count: '+str(len(countours)))
+    if len(countours) > 1:     
+        countours, _ = cv2.findContours(image,cv2.RETR_LIST,cv2.CHAIN_APPROX_SIMPLE)      
+        h = 0
+        img = 0
+        for c in countours:
+            x, y, w, h_temp = cv2.boundingRect(c)
+            if h_temp > h:
+                h = h_temp
+                img = c
+        x, y, w, h = cv2.boundingRect(img)
+        x2 = x+w
+        y2 = y+h
+        bounding_rect_image = image [y:y2,x:x2]
+        bounding_rect_image = cv2.bitwise_not(bounding_rect_image)
+        return bounding_rect_image
+    else:
+        return getBoundingRect(image)
 
 """
 A function to get the bounding box picture resized to a square
 """
-
-
 def resizeToSquare(boundingBox):
     box_height, box_width = boundingBox.shape
     if box_height >= box_width:
@@ -58,8 +76,6 @@ def resizeToSquare(boundingBox):
 """
 Method to resize square frame image
 """
-
-
 def resizeImage(img, height, width):
     return cv2.resize(img, (height, width))
 
@@ -67,23 +83,24 @@ def resizeImage(img, height, width):
 """
 Method that does all the previous steps in one function
 """
+def processImage(dir):
+    n = dir.find('img')
+    srcImg = cv2.imread(dir)
+    if dir[n+3:n+6] == '045' or dir[n+3:n+6] == '046':
+        print('i or j')
+        binaryImage = BGR2BINARY(srcImg)
+        boundingRect = getBoundingRect(binaryImage)
+    else:
+        print('not i neither j') 
+        binaryImage = BGR2BINARY(srcImg)
+        boundingRect = getCountourRect(binaryImage)
 
-
-def processImage(image, height, width):
-    srcImg = cv2.imread(image)
-    binaryImage = BGR2BINARY(srcImg)
-    boundingRect = getBoundingRect(binaryImage)
-    # squareFrame = resizeToSquare(boundingRect)
-    resizedImg = resizeImage(boundingRect, height, width)
-
-    return resizedImg
+    return boundingRect
 
 
 """
 Save images to directory
 """
-
-
 def saveImages(dirName):
     for filename in os.listdir(dirName):
         f = os.path.join('./' + dirName, filename)
@@ -91,16 +108,53 @@ def saveImages(dirName):
             toAdd = processImage(f, 30, 30)
             cv2.imwrite(f, toAdd)
 
+def getListOfCharacters():
+    listOfCharacters = []
+    excelFile = 'english.csv'
+    with open(excelFile, 'r') as data:
+        for line in csv.DictReader(data):
+            listOfCharacters.append(line)
 
+    return listOfCharacters
 """
 Main function
 """
-
-
 def main():
-    saveImages('BoundingRectangleImages')
+    dirname, filename = os.path.split(os.path.abspath(__file__))
+   
+    dir = dirname+'\EnglishHandwrittenCharacters\img045-021.png'
+    BoundingRect = processImage(dir)
+    cv2.waitKey(0)
 
 
 if __name__ == '__main__':
-    main()
+    dirname, filename = os.path.split(os.path.abspath(__file__))
+    list_of_Characters = getListOfCharacters()
 
+    for idx, img in enumerate(list_of_Characters):
+        print(idx)
+        image_name = list_of_Characters[idx]['image']  # image name
+        image_name = image_name[image_name.index('/') + 1:]
+        print(image_name)
+        dir = dirname+f'\EnglishHandwrittenCharacters\{image_name}'
+    
+        boundingRect = processImage(dir)
+
+        # cv2.imshow('BoundingRect',boundingRect)
+        # cv2.waitKey(0)
+        # cv2.destroyAllWindows()
+
+        save_dir = dirname+f'\BoundingBoxes\{image_name}'
+        cv2.imwrite(save_dir, boundingRect)
+    
+    # image_name = list_of_Characters[2438]['image']
+    # print(image_name)
+    # image_name = image_name[image_name.index('/') + 1:]
+    # dirname2 = dirname+f'\EnglishHandwrittenCharacters\{image_name}'
+    # boundingRect = processImage(dirname2)
+    # cv2.imshow('BoundingRect',boundingRect)
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows()
+    # save_dir = dirname+f'\BoundingBoxes\{image_name}'
+    # print(save_dir)
+    # cv2.imwrite(save_dir, boundingRect)

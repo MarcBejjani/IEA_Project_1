@@ -231,4 +231,5 @@ def saveToCSV():
 
 
 if __name__ == '__main__':
-    saveToCSV()
+    # saveToCSV()
+    list_of_Characters = getListOfCharacters()

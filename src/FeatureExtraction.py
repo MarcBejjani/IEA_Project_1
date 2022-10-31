@@ -170,14 +170,14 @@ def getListOfCharacters():
     return listOfCharacters
 
 
-def featuresToCSV(lisOfCharacters):  # directory of the cropped images
+def featuresToCSV(listOfCharacters):  # directory of the cropped images
     dirname, filename = os.path.split(os.path.abspath(__file__))
     
     features = []
 
-    for idx, img in tqdm(enumerate(lisOfCharacters)):
+    for idx, img in tqdm(enumerate(listOfCharacters)):
 
-        image_name = lisOfCharacters[idx]['image']  # image name
+        image_name = listOfCharacters[idx]['image']  # image name
         image_name = image_name[image_name.index('/') + 1:]
 
         dirResizedWhite = dirname+f'\SquaredWithWhiteAdded\{image_name}'
@@ -200,7 +200,7 @@ def featuresToCSV(lisOfCharacters):  # directory of the cropped images
         img['Aspect Ratio'] = getAspectRatio(boundingRectangleImage)
 
         # Projection histogram
-        column_sum, row_sum = getProjectionHistogram(ResizedBoundingWithNoWhite)
+        column_sum, row_sum = getProjectionHistogram(ResizedBoundingWithWhite)
         for idx1, value in enumerate(column_sum):
             img[f'Column Histogram {idx1}'] = value
 
@@ -208,7 +208,7 @@ def featuresToCSV(lisOfCharacters):  # directory of the cropped images
             img[f'Row Histogram {idx1}'] = value
 
         # Profile
-        bottom, top, left, right = getProfile(ResizedBoundingWithNoWhite)
+        bottom, top, left, right = getProfile(ResizedBoundingWithWhite)
         for idx1, value in enumerate(bottom):
             img[f'Bottom Profile {idx1}'] = value
 
@@ -222,7 +222,7 @@ def featuresToCSV(lisOfCharacters):  # directory of the cropped images
             img[f'Right Profile {idx1}'] = value
 
         # Hog
-        image_hog = getHOG(ResizedBoundingWithNoWhite)
+        image_hog = getHOG(boundingRectangleImage)
         for idx1, value in enumerate(image_hog):
             img[f'HOG {idx1}'] = value
 
@@ -230,7 +230,7 @@ def featuresToCSV(lisOfCharacters):  # directory of the cropped images
 
         keys = features[0].keys()
     df = pd.DataFrame(features)
-    df.to_csv('FeaturesWithNoWhite.csv', index=False, header=True)
+    df.to_csv('NewFeatureSet.csv', index=False, header=True)
 
 
 def saveToCSV():
@@ -239,5 +239,20 @@ def saveToCSV():
 
 
 if __name__ == '__main__':
-    saveToCSV()
+    #saveToCSV()
+    dirname, filename = os.path.split(os.path.abspath(__file__))
+    listOfCharacters = getListOfCharacters()
+    image_name = listOfCharacters[1]['image']  # image name
+    image_name = image_name[image_name.index('/') + 1:]
+
+    dirResizedWhite = dirname+f'\SquaredWithWhiteAdded\{image_name}'
+    dirResizedNoWhite = dirname+f'\SquaredWithNoWhiteAdded\{image_name}'
+    dirBounding = dirname+f'\BoundingBoxes\{image_name}'
+
+    image = cv2.imread(dirResizedWhite)
+    image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+    column_sum, row_sum = getProjectionHistogram(image)
+    print(column_sum)
+    print(row_sum)
     

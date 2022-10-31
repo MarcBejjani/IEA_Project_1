@@ -26,10 +26,10 @@ window.addEventListener('load', () => {
     function displayImage(){
         const img = canvas.toDataURL('image/png')
         document.getElementById("input").src= img;
-        var link = document.createElement('a');
-        link.download = img;
-        link.href = document.getElementById('canvas').toDataURL()
-        link.click();
+//        var link = document.createElement('a');
+//        link.download = img;
+//        link.href = document.getElementById('canvas').toDataURL()
+//        link.click();
     }
     //EventListeners
     canvas.addEventListener('mousedown', startPosition)

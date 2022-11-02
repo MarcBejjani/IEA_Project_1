@@ -16,7 +16,7 @@ def BGR2BINARY (image):
     # Negate the image to get a white background and black character
     binary_image = cv2.bitwise_not(thresh_image)
     # Apply opening to remove noise
-    kernel = np.ones((10,10),np.uint8)
+    kernel = np.ones((3,3),np.uint8)
     final_image = cv2.morphologyEx(binary_image, cv2.MORPH_OPEN, kernel)
     return final_image
 

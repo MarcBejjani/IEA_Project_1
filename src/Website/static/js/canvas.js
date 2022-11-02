@@ -2,6 +2,8 @@ window.addEventListener('load', () => {
     const canvas = document.querySelector("#canvas");
     const button = document.querySelector('#button')
     const ctx = canvas.getContext('2d')
+    ctx.fillStyle = 'white'
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     let painting = false;
 
@@ -26,10 +28,20 @@ window.addEventListener('load', () => {
     function displayImage(){
         const img = canvas.toDataURL('image/png')
         document.getElementById("input").src= img;
-//        var link = document.createElement('a');
-//        link.download = img;
-//        link.href = document.getElementById('canvas').toDataURL()
-//        link.click();
+        fileInput = document.getElementById("imageForm")
+//        const myFile = new File([img], 'myFile.png', {
+//        type: 'image/png',
+//        lastModified: new Date(),
+//        });
+//        const dataTransfer = new DataTransfer();
+//        dataTransfer.items.add(myFile);
+//        fileInput.files = dataTransfer.files;
+
+        var link = document.createElement('a');
+        link.download = img;
+        link.href = img;
+        link.click();
+        fileInput.files = link.href
     }
     //EventListeners
     canvas.addEventListener('mousedown', startPosition)

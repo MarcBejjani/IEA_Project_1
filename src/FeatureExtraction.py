@@ -1,6 +1,6 @@
 import csv
 from skimage.feature import hog
-from GetBoundingRectange import *
+from src.GetBoundingRectange import *
 from tqdm import tqdm
 import pandas as pd
 
@@ -238,5 +238,5 @@ def saveToCSV():
 
 
 if __name__ == '__main__':
-    saveToCSV()
-    
+    # saveToCSV()
+    print('hi')

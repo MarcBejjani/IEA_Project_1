@@ -7,13 +7,16 @@
         <link rel="stylesheet" href="{{url_for('static', filename='css/style.css')}}">
 </head>
 <body>
+    <div class="mainContainer">
+        <div class="welcomeMessage">
+        <h1>Welcome to my home</h1>
+    </div>
 
-<!--    <div class="sketch">-->
-<!--        <canvas id="canvas"></canvas>-->
-<!--        <script src="{{url_for('static', filename='js/canvas.js')}}"></script>-->
-<!--        <img id="input" src='' style="width:200px;height:200px" alt="dog"/>-->
-<!--        <button id="button">Click me</button>-->
-<!--    </div>-->
+    <div class="sketch">
+        <canvas id="canvas"></canvas>
+        <script src="{{url_for('static', filename='js/canvas.js')}}"></script>
+    </div>
+    <button id="button">Click me</button>
 
     <div class="container">
         <div class="row">
@@ -29,24 +32,24 @@
                   {% endif %}
                 {% endwith %}
             </p>
-            {% if filename %}
-                <div>
-                    <img src="{{ url_for('display_image', filename=filename) }}">
-                </div>
-            {% endif %}
+
             <form method="post" action="/" enctype="multipart/form-data">
                 <dl>
                     <p>
-                        <input type="file" name="file" class="form-control" autocomplete="off" required>
+                        <input id="imageForm" type="file" name="file" class="form-control" autocomplete="off" required>
                     </p>
                 </dl>
                 <p>
                     <input type="submit" value="Submit" class="btn btn-info">
                 </p>
             </form>
-            <a href="{{ url_for('imageprocessing') }}">Process</a>
+            {% if outputLetter %}
+                <div>
+                    <p>{{ outputLetter }}</p>
+                </div>
+            {% endif %}
         </div>
         </div>
-
+    </div>
 </body>
 </html>

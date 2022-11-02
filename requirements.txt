@@ -17,3 +17,5 @@ scikit-image~=0.19.3
 tqdm~=4.64.1
 Flask~=2.2.2
 WTForms~=3.0.1
+joblib~=1.2.0
+Werkzeug~=2.2.2

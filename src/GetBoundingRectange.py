@@ -1,22 +1,22 @@
 import cv2
 import numpy as np
 import os
-import tqdm, csv
+import csv
 
 """
 A function to get the binary black and white image from a RGB image
 """
-def BGR2BINARY (image):
+def BGR2BINARY (image, x,y):
     # convert to gray scale
     gray_image = cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
     # apply the threshold
     blur = cv2.GaussianBlur(gray_image,(5,5),0)
     _, thresh_image = cv2.threshold(blur,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
     
-    # Negate the image to get a white background and black character
+    # Negate the image to get a black background and white character
     binary_image = cv2.bitwise_not(thresh_image)
     # Apply opening to remove noise
-    kernel = np.ones((10,10),np.uint8)
+    kernel = np.ones((x,y),np.uint8)
     final_image = cv2.morphologyEx(binary_image, cv2.MORPH_OPEN, kernel)
     return final_image
 
@@ -29,6 +29,8 @@ def getBoundingRect(image):
     x2 = x1+w
     y2 = y1+h
     bounding_rect_image = image [y1:y2,x1:x2]
+
+    #Return image to white background with 
     bounding_rect_image = cv2.bitwise_not(bounding_rect_image)
     return bounding_rect_image
 
@@ -88,11 +90,11 @@ def processImage(dir):
     srcImg = cv2.imread(dir)
     if dir[n+3:n+6] == '045' or dir[n+3:n+6] == '046':
         print('i or j')
-        binaryImage = BGR2BINARY(srcImg)
+        binaryImage = BGR2BINARY(srcImg, 10, 10)
         boundingRect = getBoundingRect(binaryImage)
     else:
         print('not i neither j') 
-        binaryImage = BGR2BINARY(srcImg)
+        binaryImage = BGR2BINARY(srcImg, 10, 10)
         boundingRect = getCountourRect(binaryImage)
 
     return boundingRect
@@ -128,16 +130,18 @@ if __name__ == '__main__':
     dirname, filename = os.path.split(os.path.abspath(__file__))
     list_of_Characters = getListOfCharacters()
 
-    # for idx, img in enumerate(list_of_Characters):
-    #     print(idx)
-    #     image_name = list_of_Characters[idx]['image']  # image name
-    #     image_name = image_name[image_name.index('/') + 1:]
-    #     print(image_name)
-    #     dir = dirname+f'\EnglishHandwrittenCharacters\{image_name}' 
-    #     boundingRect = processImage(dir)
-    #     boundingRect = cv2.resize(boundingRect, (30,30))
-    #     save_dir = dirname+f'\SquaredWithNoWhiteAdded\{image_name}'
-    #     cv2.imwrite(save_dir, boundingRect)
+    for idx, img in enumerate(list_of_Characters):
+        print(idx)
+        image_name = list_of_Characters[idx]['image']  # image name
+        image_name = image_name[image_name.index('/') + 1:]
+        if os.path.exists(dirname+f'\EnglishHandwrittenCharacters\{image_name}'):
+            # print(image_name)
+            dir = dirname+f'\EnglishHandwrittenCharacters\{image_name}' 
+            boundingRect = processImage(dir)
+            # boundingRect = cv2.resize(boundingRect, (30,30))
+            boundingRect = resizeToSquare(boundingRect)
+            save_dir = dirname+f'\SquaredWithWhiteAdded\{image_name}'
+            cv2.imwrite(save_dir, boundingRect)
     
     #image_name = list_of_Characters[65]['image']
     # print(image_name)

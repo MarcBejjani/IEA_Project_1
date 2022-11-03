@@ -39,12 +39,16 @@ def upload_image():
         flash('No image selected for uploading')
         return redirect(request.url)
     if file and allowed_file(file.filename):
+        model = request.form['options']
+        svmWeight = request.form['svm-weight']
+        knnWeight = request.form['knn-weight']
+        dtWeight = request.form['dt-weight']
         filename = 'img.png'
         file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
         flash('Image successfully uploaded and displayed below')
         userInput = getFeatures('static/uploads/img.png')
         y_new = svmModel.predict(userInput)
-        return render_template('index.html', outputLetter=y_new)
+        return render_template('index.html', outputLetter=y_new, model=model)
     else:
         flash('Allowed image types are - png, jpg, jpeg, gif')
         return redirect(request.url)

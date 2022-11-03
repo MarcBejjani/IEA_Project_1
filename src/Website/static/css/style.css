@@ -9,25 +9,15 @@
     text-align: center;
 }
 
-#button{
-    position: relative;
-    top: 10px;
-}
 
 #canvas {
     border: 2px solid black;
-    height:30%;
-    width:30%;
 }
 
 body, html{
     background: hsla(227, 65%, 83%, 1);
-
-background: linear-gradient(135deg, hsla(227, 65%, 83%, 1) 25%, hsla(123, 65%, 85%, 1) 65%, hsla(0, 0%, 100%, 1) 94%);
-
-background: -moz-linear-gradient(135deg, hsla(227, 65%, 83%, 1) 25%, hsla(123, 65%, 85%, 1) 65%, hsla(0, 0%, 100%, 1) 94%);
-
-background: -webkit-linear-gradient(135deg, hsla(227, 65%, 83%, 1) 25%, hsla(123, 65%, 85%, 1) 65%, hsla(0, 0%, 100%, 1) 94%);
-
-filter: progid: DXImageTransform.Microsoft.gradient( startColorstr="#B9C5F0", endColorstr="#C2F2C4", GradientType=1 );
+    background: linear-gradient(135deg, hsla(227, 65%, 83%, 1) 25%, hsla(123, 65%, 85%, 1) 65%, hsla(0, 0%, 100%, 1) 94%);
+    background: -moz-linear-gradient(135deg, hsla(227, 65%, 83%, 1) 25%, hsla(123, 65%, 85%, 1) 65%, hsla(0, 0%, 100%, 1) 94%);
+    background: -webkit-linear-gradient(135deg, hsla(227, 65%, 83%, 1) 25%, hsla(123, 65%, 85%, 1) 65%, hsla(0, 0%, 100%, 1) 94%);
+    filter: progid: DXImageTransform.Microsoft.gradient( startColorstr="#B9C5F0", endColorstr="#C2F2C4", GradientType=1 );
 }

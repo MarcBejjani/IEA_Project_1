@@ -4,10 +4,13 @@ window.addEventListener('load', () => {
     const ctx = canvas.getContext('2d')
     ctx.fillStyle = 'white'
     ctx.fillRect(0, 0, canvas.width, canvas.height);
+    var rect = canvas.getBoundingClientRect()
+    var heightOffset = rect.top
+    var widthOffset = rect.left
 
-    let painting = false;
+    var painting = false;
 
-    function startPosition(){
+    function startPosition(e){
         painting = true;
         draw(e)
     }
@@ -20,15 +23,13 @@ window.addEventListener('load', () => {
         ctx.lineWidth = 5;
         ctx.lineCap = "round";
 
-        ctx.lineTo(e.clientX, e.clientY);
+        ctx.lineTo(e.clientX-widthOffset, e.clientY-heightOffset);
         ctx.stroke();
         ctx.beginPath()
-        ctx.moveTo(e.clientX, e.clientY)
+        ctx.moveTo(e.clientX-widthOffset, e.clientY-heightOffset)
     }
     function displayImage(){
         const img = canvas.toDataURL('image/png')
-        document.getElementById("input").src= img;
-        fileInput = document.getElementById("imageForm")
 //        const myFile = new File([img], 'myFile.png', {
 //        type: 'image/png',
 //        lastModified: new Date(),
@@ -36,12 +37,10 @@ window.addEventListener('load', () => {
 //        const dataTransfer = new DataTransfer();
 //        dataTransfer.items.add(myFile);
 //        fileInput.files = dataTransfer.files;
-
         var link = document.createElement('a');
         link.download = img;
         link.href = img;
         link.click();
-        fileInput.files = link.href
     }
     //EventListeners
     canvas.addEventListener('mousedown', startPosition)
@@ -51,8 +50,4 @@ window.addEventListener('load', () => {
 })
 
 
-window.addEventListener('resize', () => {
-    //Resizing
-    canvas.height = window.innerHeight;
-    canvas.width = window.innerWidth;
-})
+

@@ -8,15 +8,14 @@
 </head>
 <body>
     <div class="mainContainer">
-        <div class="welcomeMessage">
-        <h1>Welcome to my home</h1>
-    </div>
+        <h1>Draw or upload an image to guess the letter</h1>
 
     <div class="sketch">
         <canvas id="canvas"></canvas>
         <script src="{{url_for('static', filename='js/canvas.js')}}"></script>
+        <button id="button">Click me</button>
     </div>
-    <button id="button">Click me</button>
+
 
     <div class="container">
         <div class="row">
@@ -39,6 +38,16 @@
                         <input id="imageForm" type="file" name="file" class="form-control" autocomplete="off" required>
                     </p>
                 </dl>
+                <input type="radio" name="options" id="option1" value="knn" required>KNN</input><br>
+                <input type="radio" name="options" id="option2" value="svm" required>SVM</input><br>
+                <input type="radio" name="options" id="option3" value="decision-tree" required>Decision Tree</input><br>
+                <input type="radio" name="options" id="option4" value="decision-tree" required>Ensemble</input><br>
+                <label for="knn-weight">KNN Weight: </label>
+                <input type="text" name="knn-weight" id="knn-weight"><br>
+                <label for="svm-weight">SVM Weight: </label>
+                <input type="text" name="svm-weight" id="svm-weight"><br>
+                <label for="dt-weight">Decision Tree Weight: </label>
+                <input type="text" name="dt-weight" id="dt-weight"><br>
                 <p>
                     <input type="submit" value="Submit" class="btn btn-info">
                 </p>
@@ -46,6 +55,7 @@
             {% if outputLetter %}
                 <div>
                     <p>{{ outputLetter }}</p>
+                    <p>{{ model }}</p>
                 </div>
             {% endif %}
         </div>

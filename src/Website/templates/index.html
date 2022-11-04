@@ -35,7 +35,7 @@
             <form method="post" action="/" enctype="multipart/form-data">
                 <dl>
                     <p>
-                        <input id="imageForm" type="file" name="file" class="form-control" autocomplete="off" required>
+                        <input id="imageForm" type="file" name="file" class="form-control" autocomplete="off">
                     </p>
                 </dl>
                 <input type="radio" name="options" id="option1" value="knn" required>KNN</input><br>
@@ -54,7 +54,7 @@
             </form>
             {% if outputLetter %}
                 <div>
-                    <p>{{ outputLetter }}</p>
+                    <h1>{{ outputLetter[0] }}</h1>
                     <p>{{ model }}</p>
                 </div>
             {% endif %}

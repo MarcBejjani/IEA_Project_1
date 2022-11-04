@@ -30,23 +30,33 @@ window.addEventListener('load', () => {
     }
     function displayImage(){
         const img = canvas.toDataURL('image/png')
-//        const myFile = new File([img], 'myFile.png', {
-//        type: 'image/png',
-//        lastModified: new Date(),
-//        });
-//        const dataTransfer = new DataTransfer();
-//        dataTransfer.items.add(myFile);
-//        fileInput.files = dataTransfer.files;
         var link = document.createElement('a');
         link.download = img;
         link.href = img;
         link.click();
     }
+    function doFunction()
+    {
+        const img = canvas.toDataURL('image/png')
+        data = {'url': img}
+        $.ajax({
+            type: 'POST',
+            contentType: 'application/json',
+            url: '/',
+            dataType : 'json',
+            data : JSON.stringify(data),
+            success : function(result) {
+              jQuery("#clash").html(result);
+            },error : function(result){
+               console.log(result);
+            }
+        });
+    };
     //EventListeners
     canvas.addEventListener('mousedown', startPosition)
     canvas.addEventListener('mouseup', finishedPosition)
     canvas.addEventListener('mousemove', draw)
-    button.addEventListener("click", displayImage);
+    button.addEventListener("click", doFunction);
 })
 
 

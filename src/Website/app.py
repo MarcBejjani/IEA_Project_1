@@ -1,4 +1,8 @@
 from flask import Flask, flash, request, redirect, url_for, render_template
+import base64
+from io import BytesIO
+from PIL import Image
+import json
 import joblib
 from ImageToFeature import *
 import urllib.request
@@ -31,6 +35,15 @@ def home():
 
 @app.route('/', methods=['GET', 'POST'])
 def upload_image():
+    # data = request.get_json()
+    # canvasImage = data['url']
+    # offset = canvasImage.index(',') + 1
+    # img_bytes = base64.b64decode(canvasImage[offset:])
+    # img = Image.open(BytesIO(img_bytes))
+    # img = np.array(img)
+    # cv2.imshow('', img)
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows()
     if 'file' not in request.files:
         flash('No file part')
         return redirect(request.url)

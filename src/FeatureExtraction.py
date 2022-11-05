@@ -1,6 +1,6 @@
 import csv
 from skimage.feature import hog
-from GetBoundingRectange import *
+from src.GetBoundingRectange import *
 from tqdm import tqdm
 import pandas as pd
 
@@ -10,7 +10,8 @@ def getBlackToWhiteRatio(image):
     return blackToWhiteRatio
 
 
-#Unused Features
+
+# Unused Features
 '''
 def getBlackRatio(image):
     blackRatio = np.sum(image==0)/(np.sum(image == 0) +np.sum(image == 255))
@@ -56,7 +57,6 @@ def verticalSymmetry(image):
     return vertical_Symmetry
 
 '''
-
 def getAspectRatio(image):
     w, h = image.shape
     aspectRatio = h / w
@@ -80,8 +80,10 @@ def getProjectionHistogram(image):
     # row_sum = normalize_2d(row_sum).flatten()
 
     # Normalize by getting a ratio between 0 and 1
+
     column_sum = column_sum /(30*255)
     row_sum = row_sum /(30*255)
+
 
     return column_sum, row_sum
 
@@ -154,7 +156,6 @@ def getProfile(image):
     if np.sum(left) != 0:
         left = normalize_2d(left)
 
-
     return bottom, top, left, right
 
 
@@ -177,28 +178,29 @@ def getListOfCharacters():
 
 def featuresToCSV(listOfCharacters):  # directory of the cropped images
     dirname, filename = os.path.split(os.path.abspath(__file__))
-    
+
+
     features = []
 
     for idx, img in tqdm(enumerate(listOfCharacters)):
         image_name = listOfCharacters[idx]['image']  # image name
         image_name = image_name[image_name.index('/') + 1:]
-        if os.path.exists(dirname+f'\EnglishHandwrittenCharacters\{image_name}'):    
+        if os.path.exists(dirname + f'\EnglishHandwrittenCharacters\{image_name}'):
             image_name = listOfCharacters[idx]['image']  # image name
             image_name = image_name[image_name.index('/') + 1:]
 
-            dirResizedWhite = dirname+f'\SquaredWithWhiteAdded\{image_name}'
-            dirResizedNoWhite = dirname+f'\SquaredWithNoWhiteAdded\{image_name}'
-            dirBounding = dirname+f'\BoundingBoxes\{image_name}'
+            dirResizedWhite = dirname + f'\SquaredWithWhiteAdded\{image_name}'
+            dirResizedNoWhite = dirname + f'\SquaredWithNoWhiteAdded\{image_name}'
+            dirBounding = dirname + f'\BoundingBoxes\{image_name}'
 
             boundingRectangleImage = cv2.imread(dirBounding)
-            boundingRectangleImage = cv2.cvtColor(boundingRectangleImage,cv2.COLOR_BGR2GRAY)
+            boundingRectangleImage = cv2.cvtColor(boundingRectangleImage, cv2.COLOR_BGR2GRAY)
 
             ResizedBoundingWithWhite = cv2.imread(dirResizedWhite)
-            ResizedBoundingWithWhite = cv2.cvtColor(ResizedBoundingWithWhite,cv2.COLOR_BGR2GRAY)
+            ResizedBoundingWithWhite = cv2.cvtColor(ResizedBoundingWithWhite, cv2.COLOR_BGR2GRAY)
 
             ResizedBoundingWithNoWhite = cv2.imread(dirResizedNoWhite)
-            ResizedBoundingWithNoWhite = cv2.cvtColor(ResizedBoundingWithNoWhite,cv2.COLOR_BGR2GRAY)
+            ResizedBoundingWithNoWhite = cv2.cvtColor(ResizedBoundingWithNoWhite, cv2.COLOR_BGR2GRAY)
 
             img['BlackToWhite'] = getBlackToWhiteRatio(boundingRectangleImage)
             # img['Horizontal Symmetry'] = horizontalSymmetry(boundingRectangleImage)
@@ -260,7 +262,24 @@ def main():
     print(column_sum)
     print(row_sum)
 
+def main():
+    dirname, filename = os.path.split(os.path.abspath(__file__))
+    listOfCharacters = getListOfCharacters()
+    image_name = listOfCharacters[1]['image']  # image name
+    image_name = image_name[image_name.index('/') + 1:]
+
+    dirResizedWhite = dirname + f'\SquaredWithWhiteAdded\{image_name}'
+    dirResizedNoWhite = dirname + f'\SquaredWithNoWhiteAdded\{image_name}'
+    dirBounding = dirname + f'\BoundingBoxes\{image_name}'
+
+    image = cv2.imread(dirResizedWhite)
+    image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+    column_sum, row_sum = getProjectionHistogram(image)
+    print(column_sum)
+    print(row_sum)
+
+
 if __name__ == '__main__':
     saveToCSV()
 
-    

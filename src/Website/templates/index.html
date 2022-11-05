@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Handwritten Character Recognition</title>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+        <link rel="stylesheet" href="{{url_for('static', filename='css/style.css')}}">
+</head>
+<body>
+    <div class="mainContainer">
+        <img id="lauEngineering" src="../lau-engineering.png" alt="logo">
+        <h1>Handwritten Character Recognition</h1>
+
+        <a href="/draw">Draw a character to upload</a>
+
+    <h3>Or</h3>
+    <div class="container">
+        <div class="row">
+            <h2>Select a file to upload</h2>
+            <p>
+                {% with messages = get_flashed_messages() %}
+                  {% if messages %}
+                    <ul>
+                    {% for message in messages %}
+                      <li>{{ message }}</li>
+                    {% endfor %}
+                    </ul>
+                  {% endif %}
+                {% endwith %}
+            </p>
+
+            <form method="post" action="/" enctype="multipart/form-data">
+                <dl>
+                    <p>
+                        <input id="imageForm" type="file" name="file" class="form-control" autocomplete="off">
+                    </p>
+                </dl>
+                <div id="inputRadio">
+                    <h4>Choose which input you want to use:</h4>
+                    <input type="radio" name="inputType" value="upload" required>The uploaded image
+                    <input type="radio" name="inputType" value="drawing" required>The drawing
+                </div>
+                <br><br>
+                <h4>Choose a custom model</h4>
+                <input type="radio" name="options" id="option1" value="knn" required>KNN</input>
+                <input type="radio" name="options" id="option2" value="svm" required>SVM</input>
+                <input type="radio" name="options" id="option3" value="random-forest" required>Random Forest</input>
+                <input type="radio" name="options" id="option4" value="svm-ensemble" required>SVM Ensemble</input>
+                <input type="radio" name="options" id="option5" value="ensemble" required>Ensemble</input><br>
+                <label for="knn-weight">KNN Weight: </label>
+                <input type="text" name="knn-weight" id="knn-weight"><br>
+                <label for="svm-weight">SVM Weight: </label>
+                <input type="text" name="svm-weight" id="svm-weight"><br>
+                <label for="dt-weight">Tree Weight: </label>
+                <input type="text" name="dt-weight" id="dt-weight"><br><br>
+                <p>
+                    <input id="button" type="submit" value="Predict" class="btn btn-info">
+                </p>
+            </form>
+            {% if outputLetter %}
+                <div>
+                    <h1>Prediction: {{ outputLetter[0] }}</h1>
+                    <p>{{ model }}</p>
+                </div>
+            {% endif %}
+        </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -38,4 +38,3 @@ def hogPlot(hog_image):
     plt.imshow(hog_image, cmap="gray")
     plt.show()
 
-

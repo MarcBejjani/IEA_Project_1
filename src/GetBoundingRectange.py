@@ -7,18 +7,19 @@ import csv
 A function to get the binary black and white image from a RGB image
 """
 
+def BGR2BINARY (image, x,y):
 
-def BGR2BINARY(image, x, y):
     # convert to gray scale
     gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     # apply the threshold
-    blur = cv2.GaussianBlur(gray_image, (5, 5), 0)
-    _, thresh_image = cv2.threshold(blur, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
 
+    blur = cv2.GaussianBlur(gray_image,(5,5),0)
+    _, thresh_image = cv2.threshold(blur,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
+    
     # Negate the image to get a black background and white character
     binary_image = cv2.bitwise_not(thresh_image)
     # Apply opening to remove noise
-    kernel = np.ones((x, y), np.uint8)
+    kernel = np.ones((x,y),np.uint8)
     final_image = cv2.morphologyEx(binary_image, cv2.MORPH_OPEN, kernel)
     return final_image
 
@@ -29,13 +30,15 @@ A function to get the bounding rectange of the binary image
 
 
 def getBoundingRect(image):
-    x1, y1, w, h = cv2.boundingRect(image)
 
-    x2 = x1 + w
-    y2 = y1 + h
-    bounding_rect_image = image[y1:y2, x1:x2]
+    x1,y1,w,h = cv2.boundingRect(image)
+    
+    x2 = x1+w
+    y2 = y1+h
+    bounding_rect_image = image [y1:y2,x1:x2]
 
-    # Return image to white background with
+    #Return image to white background with 
+
     bounding_rect_image = cv2.bitwise_not(bounding_rect_image)
     return bounding_rect_image
 
@@ -106,7 +109,9 @@ def processImage(dir):
         binaryImage = BGR2BINARY(srcImg, 10, 10)
         boundingRect = getBoundingRect(binaryImage)
     else:
-        print('not i neither j')
+
+        print('not i neither j') 
+
         binaryImage = BGR2BINARY(srcImg, 10, 10)
         boundingRect = getCountourRect(binaryImage)
 
@@ -154,6 +159,7 @@ if __name__ == '__main__':
         print(idx)
         image_name = list_of_Characters[idx]['image']  # image name
         image_name = image_name[image_name.index('/') + 1:]
+
         if os.path.exists(dirname + f'\EnglishHandwrittenCharacters\{image_name}'):
             # print(image_name)
             dir = dirname + f'\EnglishHandwrittenCharacters\{image_name}'
@@ -164,6 +170,7 @@ if __name__ == '__main__':
             cv2.imwrite(save_dir, boundingRect)
 
     # image_name = list_of_Characters[65]['image']
+
     # print(image_name)
     # image_name = image_name[image_name.index('/') + 1:]
     # dir= dirname+f'\EnglishHandwrittenCharacters\{image_name}'

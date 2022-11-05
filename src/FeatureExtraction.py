@@ -9,6 +9,9 @@ def getBlackToWhiteRatio(image):
     blackToWhiteRatio = np.sum(image == 0) / (np.sum(image == 255) + 0.00000000000000001)
     return blackToWhiteRatio
 
+
+# Unused Features
+'''
 def getBlackRatio(image):
     blackRatio = np.sum(image==0)/(np.sum(image == 0) +np.sum(image == 255))
     return blackRatio
@@ -52,6 +55,7 @@ def verticalSymmetry(image):
 
     return vertical_Symmetry
 
+'''
 
 
 def getAspectRatio(image):
@@ -69,21 +73,24 @@ def normalize_2d(matrix):
 
 
 def getProjectionHistogram(image):
+    image = cv2.bitwise_not(image)
     column_sum = np.sum(image, axis=0)  # sum the values in each column of the img
     row_sum = np.sum(image, axis=1)  # sum the values in each row of the img
 
-    column_sum = normalize_2d(column_sum).flatten()
-    row_sum = normalize_2d(row_sum).flatten()
+    # column_sum = normalize_2d(column_sum).flatten()
+    # row_sum = normalize_2d(row_sum).flatten()
+
+    # Normalize by getting a ratio between 0 and 1
+    column_sum = column_sum / (30 * 255)
+    row_sum = row_sum / (30 * 255)
 
     return column_sum, row_sum
 
 
 def getProfile(image):
+    image = cv2.bitwise_not(image)
     dimensions = image.shape  # (m,n) m:rows/ n:columns
 
-    """
-            #####   Bottom  #####
-    """
     bottom = []
     bottom_sum = 0
 
@@ -148,7 +155,6 @@ def getProfile(image):
     if np.sum(left) != 0:
         left = normalize_2d(left)
 
-
     return bottom, top, left, right
 
 
@@ -156,7 +162,6 @@ def getHOG(image):
     resized_img = cv2.resize(image, (128, 64))
     hog_feature, image_hog = hog(resized_img, orientations=8, pixels_per_cell=(16, 16), cells_per_block=(4, 4),
                                  visualize=True)  # Set visualize to true if we need to see the image
-
     return hog_feature
 
 
@@ -170,66 +175,68 @@ def getListOfCharacters():
     return listOfCharacters
 
 
-def featuresToCSV(lisOfCharacters):  # directory of the cropped images
+def featuresToCSV(listOfCharacters):  # directory of the cropped images
     dirname, filename = os.path.split(os.path.abspath(__file__))
-    
+
     features = []
 
-    for idx, img in tqdm(enumerate(lisOfCharacters)):
-
-        image_name = lisOfCharacters[idx]['image']  # image name
+    for idx, img in tqdm(enumerate(listOfCharacters)):
+        image_name = listOfCharacters[idx]['image']  # image name
         image_name = image_name[image_name.index('/') + 1:]
+        if os.path.exists(dirname + f'\EnglishHandwrittenCharacters\{image_name}'):
+            image_name = listOfCharacters[idx]['image']  # image name
+            image_name = image_name[image_name.index('/') + 1:]
 
-        dirResizedWhite = dirname+f'\SquaredWithWhiteAdded\{image_name}'
-        dirResizedNoWhite = dirname+f'\SquaredWithNoWhiteAdded\{image_name}'
-        dirBounding = dirname+f'\BoundingBoxes\{image_name}'
+            dirResizedWhite = dirname + f'\SquaredWithWhiteAdded\{image_name}'
+            dirResizedNoWhite = dirname + f'\SquaredWithNoWhiteAdded\{image_name}'
+            dirBounding = dirname + f'\BoundingBoxes\{image_name}'
 
-        boundingRectangleImage = cv2.imread(dirBounding)
-        boundingRectangleImage = cv2.cvtColor(boundingRectangleImage,cv2.COLOR_BGR2GRAY)
+            boundingRectangleImage = cv2.imread(dirBounding)
+            boundingRectangleImage = cv2.cvtColor(boundingRectangleImage, cv2.COLOR_BGR2GRAY)
 
-        ResizedBoundingWithWhite = cv2.imread(dirResizedWhite)
-        ResizedBoundingWithWhite = cv2.cvtColor(ResizedBoundingWithWhite,cv2.COLOR_BGR2GRAY)
+            ResizedBoundingWithWhite = cv2.imread(dirResizedWhite)
+            ResizedBoundingWithWhite = cv2.cvtColor(ResizedBoundingWithWhite, cv2.COLOR_BGR2GRAY)
 
-        ResizedBoundingWithNoWhite = cv2.imread(dirResizedNoWhite)
-        ResizedBoundingWithNoWhite = cv2.cvtColor(ResizedBoundingWithNoWhite,cv2.COLOR_BGR2GRAY)
+            ResizedBoundingWithNoWhite = cv2.imread(dirResizedNoWhite)
+            ResizedBoundingWithNoWhite = cv2.cvtColor(ResizedBoundingWithNoWhite, cv2.COLOR_BGR2GRAY)
 
-        img['BlackToWhite'] = getBlackToWhiteRatio(boundingRectangleImage)
-        img['Horizontal Symmetry'] = horizontalSymmetry(boundingRectangleImage)
-        img['Inverse Symmetry'] = inverseSymmetry(boundingRectangleImage)
-        img['Vertical Symmetry'] = verticalSymmetry(boundingRectangleImage)
-        img['Aspect Ratio'] = getAspectRatio(boundingRectangleImage)
+            img['BlackToWhite'] = getBlackToWhiteRatio(boundingRectangleImage)
+            # img['Horizontal Symmetry'] = horizontalSymmetry(boundingRectangleImage)
+            # img['Inverse Symmetry'] = inverseSymmetry(boundingRectangleImage)
+            # img['Vertical Symmetry'] = verticalSymmetry(boundingRectangleImage)
+            img['Aspect Ratio'] = getAspectRatio(boundingRectangleImage)
 
-        # Projection histogram
-        column_sum, row_sum = getProjectionHistogram(ResizedBoundingWithNoWhite)
-        for idx1, value in enumerate(column_sum):
-            img[f'Column Histogram {idx1}'] = value
+            # Projection histogram
+            column_sum, row_sum = getProjectionHistogram(ResizedBoundingWithWhite)
+            for idx1, value in enumerate(column_sum):
+                img[f'Column Histogram {idx1}'] = value
 
-        for idx1, value in enumerate(row_sum):
-            img[f'Row Histogram {idx1}'] = value
+            for idx1, value in enumerate(row_sum):
+                img[f'Row Histogram {idx1}'] = value
 
-        # Profile
-        bottom, top, left, right = getProfile(ResizedBoundingWithNoWhite)
-        for idx1, value in enumerate(bottom):
-            img[f'Bottom Profile {idx1}'] = value
+            # Profile
+            bottom, top, left, right = getProfile(ResizedBoundingWithWhite)
+            for idx1, value in enumerate(bottom):
+                img[f'Bottom Profile {idx1}'] = value
 
-        for idx1, value in enumerate(top):
-            img[f'Top Profile {idx1}'] = value
+            for idx1, value in enumerate(top):
+                img[f'Top Profile {idx1}'] = value
 
-        for idx1, value in enumerate(left):
-            img[f'Left Profile {idx1}'] = value
+            for idx1, value in enumerate(left):
+                img[f'Left Profile {idx1}'] = value
 
-        for idx1, value in enumerate(right):
-            img[f'Right Profile {idx1}'] = value
+            for idx1, value in enumerate(right):
+                img[f'Right Profile {idx1}'] = value
 
-        # Hog
-        image_hog = getHOG(ResizedBoundingWithNoWhite)
-        for idx1, value in enumerate(image_hog):
-            img[f'HOG {idx1}'] = value
+            # Hog
+            image_hog = getHOG(boundingRectangleImage)
+            for idx1, value in enumerate(image_hog):
+                img[f'HOG {idx1}'] = value
 
-        features.append(img)
+            features.append(img)
 
     df = pd.DataFrame(features)
-    df.to_csv('FeaturesWithNoWhite.csv', index=False, header=True)
+    df.to_csv('FeaturesWhite.csv', index=False, header=True)
 
 
 def saveToCSV():
@@ -237,6 +244,24 @@ def saveToCSV():
     featuresToCSV(list_of_Characters)
 
 
+def main():
+    dirname, filename = os.path.split(os.path.abspath(__file__))
+    listOfCharacters = getListOfCharacters()
+    image_name = listOfCharacters[1]['image']  # image name
+    image_name = image_name[image_name.index('/') + 1:]
+
+    dirResizedWhite = dirname + f'\SquaredWithWhiteAdded\{image_name}'
+    dirResizedNoWhite = dirname + f'\SquaredWithNoWhiteAdded\{image_name}'
+    dirBounding = dirname + f'\BoundingBoxes\{image_name}'
+
+    image = cv2.imread(dirResizedWhite)
+    image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+    column_sum, row_sum = getProjectionHistogram(image)
+    print(column_sum)
+    print(row_sum)
+
+
 if __name__ == '__main__':
-    # saveToCSV()
-    print('hi')
+    saveToCSV()
+

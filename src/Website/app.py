@@ -1,14 +1,11 @@
-from flask import Flask, flash, request, redirect, url_for, render_template
+from flask import Flask, flash, request, redirect, render_template
 import base64
 from io import BytesIO
 from PIL import Image
-import json
 import joblib
 from ImageToFeature import *
-import urllib.request
-import os
-from werkzeug.utils import secure_filename
 from src.GetBoundingRectange import *
+from sequentialmodel import SequentialModel
 
 app = Flask(__name__)
 
@@ -38,11 +35,19 @@ def upload_image():
     inputType = request.form['inputType']
     if inputType == 'drawing':
         model = request.form['options']
-        svmWeight = request.form['svm-weight']
-        knnWeight = request.form['knn-weight']
-        dtWeight = request.form['dt-weight']
         userInput = getFeatures('static/uploads/canvasImage.png')
-        y_new = svmModel.predict(userInput)
+        if model == 'svm-ensemble':
+            y_new = SequentialModel(userInput)
+        elif model == 'svm':
+            y_new = svmModel.predict(userInput)
+        elif model == 'knn':
+            pass
+        elif model == 'random-forest':
+            pass
+        elif model == 'ensemble':
+            svmWeight = request.form['svm-weight']
+            knnWeight = request.form['knn-weight']
+            dtWeight = request.form['dt-weight']
         return render_template('index.html', outputLetter=y_new, model=model)
     if 'file' not in request.files:
         flash('No file part')

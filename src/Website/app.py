@@ -35,15 +35,15 @@ def home():
 
 @app.route('/', methods=['GET', 'POST'])
 def upload_image():
-    # data = request.get_json()
-    # canvasImage = data['url']
-    # offset = canvasImage.index(',') + 1
-    # img_bytes = base64.b64decode(canvasImage[offset:])
-    # img = Image.open(BytesIO(img_bytes))
-    # img = np.array(img)
-    # cv2.imshow('', img)
-    # cv2.waitKey(0)
-    # cv2.destroyAllWindows()
+    inputType = request.form['inputType']
+    if inputType == 'drawing':
+        model = request.form['options']
+        svmWeight = request.form['svm-weight']
+        knnWeight = request.form['knn-weight']
+        dtWeight = request.form['dt-weight']
+        userInput = getFeatures('static/uploads/canvasImage.png')
+        y_new = svmModel.predict(userInput)
+        return render_template('index.html', outputLetter=y_new, model=model)
     if 'file' not in request.files:
         flash('No file part')
         return redirect(request.url)
@@ -67,10 +67,20 @@ def upload_image():
         return redirect(request.url)
 
 
-@app.route('/display/<filename>')
-def display_image(filename):
-    # print('display_image filename: ' + filename)
-    return redirect(url_for('static', filename='uploads/' + filename), code=301)
+@app.route('/draw')
+def display_image():
+    return render_template('drawing.html')
+
+
+@app.route('/draw', methods=['GET', 'POST'])
+def draw():
+    canvasImage = request.form['js_data']
+    offset = canvasImage.index(',') + 1
+    img_bytes = base64.b64decode(canvasImage[offset:])
+    img = Image.open(BytesIO(img_bytes))
+    img = np.array(img)
+    cv2.imwrite('static/uploads/canvasImage.png', img)
+    return render_template('drawing.html')
 
 
 if __name__ == "__main__":

@@ -38,19 +38,23 @@ window.addEventListener('load', () => {
     function doFunction()
     {
         const img = canvas.toDataURL('image/png')
-        data = {'url': img}
-        $.ajax({
-            type: 'POST',
-            contentType: 'application/json',
-            url: '/',
-            dataType : 'json',
-            data : JSON.stringify(data),
-            success : function(result) {
-              jQuery("#clash").html(result);
-            },error : function(result){
-               console.log(result);
-            }
-        });
+
+        $.post('/draw', {
+            js_data: img,
+        })
+//        data = {'url': img}
+//        $.ajax({
+//            type: 'POST',
+//            contentType: 'application/json',
+//            url: '/',
+//            dataType : 'json',
+//            data : JSON.stringify(data),
+//            success : function(result) {
+//              jQuery("#clash").html(result);
+//            },error : function(result){
+//               console.log(result);
+//            }
+//        });
     };
     //EventListeners
     canvas.addEventListener('mousedown', startPosition)

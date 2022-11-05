@@ -10,11 +10,7 @@
     <div class="mainContainer">
         <h1>Draw or upload an image to guess the letter</h1>
 
-    <div class="sketch">
-        <canvas id="canvas"></canvas>
-        <script src="{{url_for('static', filename='js/canvas.js')}}"></script>
-        <button id="button">Click me</button>
-    </div>
+        <a href="/draw">draw</a>
 
 
     <div class="container">
@@ -38,6 +34,8 @@
                         <input id="imageForm" type="file" name="file" class="form-control" autocomplete="off">
                     </p>
                 </dl>
+                <input type="radio" name="inputType" value="drawing" required>Use the drawing
+                <input type="radio" name="inputType" value="upload" required>Use the uploaded image<br>
                 <input type="radio" name="options" id="option1" value="knn" required>KNN</input><br>
                 <input type="radio" name="options" id="option2" value="svm" required>SVM</input><br>
                 <input type="radio" name="options" id="option3" value="decision-tree" required>Decision Tree</input><br>
@@ -49,7 +47,7 @@
                 <label for="dt-weight">Decision Tree Weight: </label>
                 <input type="text" name="dt-weight" id="dt-weight"><br>
                 <p>
-                    <input type="submit" value="Submit" class="btn btn-info">
+                    <input id="button" type="submit" value="Submit" class="btn btn-info">
                 </p>
             </form>
             {% if outputLetter %}

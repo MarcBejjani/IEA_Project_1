@@ -5,6 +5,13 @@
     text-align: center;
 }
 
+.sketch{
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  margin-top: -75px;
+  margin-left: -150px;
+}
 
 #canvas {
     border: 2px solid black;
@@ -18,16 +25,6 @@ body, html{
     filter: progid: DXImageTransform.Microsoft.gradient( startColorstr="#B9C5F0", endColorstr="#C2F2C4", GradientType=1 );
 }
 
-#imageForm{
-    width: 50%;
-    text-align: center;
-    margin: auto;
-}
-
-h4{
-    font-weight: bold
-}
-
 #lauEngineering{
     position: absolute;
     z-index: 1;
@@ -35,25 +32,4 @@ h4{
     left: 10px;
     height: 200px;
     width: 200px
-}
-
-svg {
-  fill: rgb(242, 242, 242);
-  height: 3.6rem;
-  width: 3.6rem;
-  margin: 0.2rem;
-}
-
-
-#drawLink{
-    font-size: 26px
-}
-
-input[type="text"]{
-  width: 30px;
-}
-
-.sketch{
-
-    top: 50%;
 }

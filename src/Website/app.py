@@ -48,7 +48,7 @@ def upload_image():
             svmWeight = request.form['svm-weight']
             knnWeight = request.form['knn-weight']
             dtWeight = request.form['dt-weight']
-        boundingRectInput, _, _ = processUserImage('static/uploads/canvasImage.png')
+        _, _, boundingRectInput = processUserImage('static/uploads/canvasImage.png')
         cv2.imwrite('static/uploads/canvasBox.png', boundingRectInput)
         return render_template('index.html', outputLetter=y_new, model=model, inputImage='static/uploads/canvasBox.png')
     if 'file' not in request.files:
@@ -75,7 +75,7 @@ def upload_image():
             svmWeight = request.form['svm-weight']
             knnWeight = request.form['knn-weight']
             dtWeight = request.form['dt-weight']
-        boundingRectInput, _, _ = processUserImage('static/uploads/img.png')
+        _, _, boundingRectInput = processUserImage('static/uploads/img.png')
         cv2.imwrite('static/uploads/uploadBox.png', boundingRectInput)
         return render_template('index.html', outputLetter=y_new, model=model, inputImage='static/uploads/uploadBox.png')
     else:

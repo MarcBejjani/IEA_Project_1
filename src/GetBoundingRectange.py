@@ -167,7 +167,7 @@ if __name__ == '__main__':
     # print(image_name)
     # image_name = image_name[image_name.index('/') + 1:]
     # dir= dirname+f'\EnglishHandwrittenCharacters\{image_name}'
-    # boundingRect = processImage(dir)
+    # boundingRect = processUserImage(dir)
     # boundingRect = resizeToSquare(boundingRect)
     # boundingRect = cv2.resize(boundingRect, (30,30))
     # print(boundingRect.shape)

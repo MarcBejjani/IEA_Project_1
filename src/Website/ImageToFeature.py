@@ -2,7 +2,7 @@ import pandas as pd
 from src.FeatureExtraction import *
 
 
-def processImage(dir):
+def processUserImage(dir):
     image = cv2.imread(dir)
     image = BGR2BINARY(image, 3, 3)
     boundingBox = getBoundingRect(image)
@@ -14,7 +14,7 @@ def processImage(dir):
 
 def getFeatures(dir):
 
-    boundingBox, boxNoWhite, boxWhite = processImage(dir)
+    boundingBox, boxNoWhite, boxWhite = processUserImage(dir)
 
     inputDict = {'BlackToWhite': getBlackToWhiteRatio(boundingBox),
                  'Aspect Ratio': getAspectRatio(boundingBox)}

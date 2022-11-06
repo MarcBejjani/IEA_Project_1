@@ -34,7 +34,7 @@ def home():
 def upload_image():
     inputType = request.form['inputType']
     if inputType == 'drawing':
-        model = request.form['options']
+        model = request.form['model']
         userInput = getFeatures('static/uploads/canvasImage.png')
         if model == 'svm-ensemble':
             y_new = SequentialModel(userInput)
@@ -48,7 +48,9 @@ def upload_image():
             svmWeight = request.form['svm-weight']
             knnWeight = request.form['knn-weight']
             dtWeight = request.form['dt-weight']
-        return render_template('index.html', outputLetter=y_new, model=model)
+        boundingRectInput, _, _ = processUserImage('static/uploads/canvasImage.png')
+        cv2.imwrite('static/uploads/canvasBox.png', boundingRectInput)
+        return render_template('index.html', outputLetter=y_new, model=model, inputImage='static/uploads/canvasBox.png')
     if 'file' not in request.files:
         flash('No file part')
         return redirect(request.url)
@@ -57,16 +59,25 @@ def upload_image():
         flash('No image selected for uploading')
         return redirect(request.url)
     if file and allowed_file(file.filename):
-        model = request.form['options']
-        svmWeight = request.form['svm-weight']
-        knnWeight = request.form['knn-weight']
-        dtWeight = request.form['dt-weight']
         filename = 'img.png'
         file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-        flash('Image successfully uploaded and displayed below')
+        model = request.form['model']
         userInput = getFeatures('static/uploads/img.png')
-        y_new = svmModel.predict(userInput)
-        return render_template('index.html', outputLetter=y_new, model=model)
+        if model == 'svm-ensemble':
+            y_new = SequentialModel(userInput)
+        elif model == 'svm':
+            y_new = svmModel.predict(userInput)
+        elif model == 'knn':
+            pass
+        elif model == 'random-forest':
+            pass
+        elif model == 'ensemble':
+            svmWeight = request.form['svm-weight']
+            knnWeight = request.form['knn-weight']
+            dtWeight = request.form['dt-weight']
+        boundingRectInput, _, _ = processUserImage('static/uploads/img.png')
+        cv2.imwrite('static/uploads/uploadBox.png', boundingRectInput)
+        return render_template('index.html', outputLetter=y_new, model=model, inputImage='static/uploads/uploadBox.png')
     else:
         flash('Allowed image types are - png, jpg, jpeg, gif')
         return redirect(request.url)

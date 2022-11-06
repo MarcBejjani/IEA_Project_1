@@ -5,10 +5,6 @@
     text-align: center;
 }
 
-.welcomeMessage{
-    text-align: center;
-}
-
 
 #canvas {
     border: 2px solid black;
@@ -35,8 +31,24 @@ h4{
 #lauEngineering{
     position: absolute;
     z-index: 1;
-    top: 0px;
-    left: 0px;
+    top: -40px;
+    left: 10px;
     height: 200px;
     width: 200px
+}
+
+svg {
+  fill: rgb(242, 242, 242);
+  height: 3.6rem;
+  width: 3.6rem;
+  margin: 0.2rem;
+}
+
+
+#drawLink{
+    font-size: 26px
+}
+
+input[type="text"]{
+  width: 30px;
 }

@@ -47,10 +47,10 @@ input[type="text"]{
 
 
 table{
-    width: 30%;
+    width: 50%;
     float: right;
-    margin-right: 200px;
-    margin-left: -200px;
+    margin-right: 40px;
+    margin-left: -100px;
     margin-top: 50px;
     background-color: white;
 }
@@ -132,5 +132,10 @@ img{
 li {
     font-size: 30px;
     color: red;
+}
+
+#inputImage {
+    margin-top: 20px;
+    margin-left: -100px;
 }
 

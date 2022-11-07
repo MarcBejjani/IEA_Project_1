@@ -21,9 +21,10 @@ window.addEventListener('load', () => {
     }
     function draw(e){
         if(!painting) return;
-        ctx.lineWidth = 10;
+        ctx.lineWidth = document.getElementById('selWidth').value;
         ctx.lineCap = "round";
-
+        const color = document.getElementById('selColor').value;
+        ctx.strokeStyle = color;
         ctx.lineTo(e.clientX-widthOffset, e.clientY-heightOffset);
         ctx.stroke();
         ctx.beginPath()

@@ -13,21 +13,6 @@ html {
   margin: 0;
 }
 
-a:link,
-a:visited,
-a:hover,
-a:active {
-  color: rgba(0, 0, 16, 0.8);
-  text-decoration: none;
-}
-
-a:hover,
-a:active {
-  border-bottom: 0.1em solid rgba(0, 0, 16, 0.8);
-  color: rgba(0, 0, 16, 0.8);
-  text-decoration: none;
-}
-
 span {
   color: rgba(0, 0, 16, 0.4);
   font-size: 70%;

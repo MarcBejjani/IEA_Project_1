@@ -5,17 +5,7 @@
     text-align: center;
 }
 
-.sketch{
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  margin-top: -75px;
-  margin-left: -150px;
-}
 
-#canvas {
-    border: 2px solid black;
-}
 
 body, html{
     background: hsla(227, 65%, 83%, 1);
@@ -25,11 +15,13 @@ body, html{
     filter: progid: DXImageTransform.Microsoft.gradient( startColorstr="#B9C5F0", endColorstr="#C2F2C4", GradientType=1 );
 }
 
-#lauEngineering{
-    position: absolute;
-    z-index: 1;
-    top: -40px;
-    left: 10px;
-    height: 200px;
-    width: 200px
-}
+#canvas_div {
+         text-align: center;
+         display: block;
+         margin-left: auto;
+         margin-right: auto;
+         }
+         canvas {
+         border: 2px solid black;
+         }
+

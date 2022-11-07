@@ -1,7 +1,8 @@
 window.addEventListener('load', () => {
     const canvas = document.querySelector("#canvas");
     const button = document.querySelector('#button')
-    const clear = document.querySelector('#clear')
+    const clear = document.querySelector('#clear');
+    const collection = document.getElementsByClassName("weights");
     const ctx = canvas.getContext('2d')
     ctx.fillStyle = 'white'
     ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -52,6 +53,11 @@ window.addEventListener('load', () => {
         ctx.clearRect(0,0,canvas.width,canvas.height);
         ctx.fillRect(0, 0, canvas.width, canvas.height);
     }
+
+    function toggleWeights{
+
+    }
+
     //EventListeners
     canvas.addEventListener('mousedown', startPosition)
     canvas.addEventListener('mouseup', finishedPosition)

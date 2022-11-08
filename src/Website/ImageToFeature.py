@@ -1,5 +1,5 @@
 import pandas as pd
-from src.FeatureExtraction import *
+from FeatureExtraction import *
 
 
 def processUserImage(dir):

@@ -4,7 +4,7 @@ from io import BytesIO
 from PIL import Image
 import joblib
 from ImageToFeature import *
-from src.GetBoundingRectange import *
+from GetBoundingRectange import *
 from sequentialmodel import SequentialModel2
 
 app = Flask(__name__)

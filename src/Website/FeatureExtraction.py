@@ -1,6 +1,6 @@
 import csv
 from skimage.feature import hog
-from src.GetBoundingRectange import *
+from GetBoundingRectange import *
 from tqdm import tqdm
 import pandas as pd
 

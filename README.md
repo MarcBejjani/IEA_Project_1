@@ -4,7 +4,7 @@
 ## Execution
  git clone https://github.com/daniazzam/IEA_Project_1
  
- pip istall -requirements.txt
+ pip install -requirements.txt
  
  cd src/Website
  

@@ -1,8 +1,0 @@
-*check blur
-
-add white pixels for image rendering to prespecified pixel size
-
-*research features: how to extract, types...
-*check all available non-parametric learning algos and what works best in character recognition
-
-done :check opening

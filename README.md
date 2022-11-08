@@ -4,6 +4,8 @@
 ## Execution
  git clone https://github.com/daniazzam/IEA_Project_1
  
+ pip istall -requirements.txt
+ 
  cd src/Website
  
  run app.py

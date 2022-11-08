@@ -5,7 +5,7 @@ from PIL import Image
 import joblib
 from ImageToFeature import *
 from src.GetBoundingRectange import *
-from sequentialmodel import SequentialModel
+from sequentialmodel import SequentialModel2
 
 app = Flask(__name__)
 
@@ -85,7 +85,7 @@ def upload_image():
         model = request.form['model']
         userHistWhite, userProfileWhite = getFeatures('static/uploads/canvasImage.png')
         if model == 'svm-ensemble':
-            probas = SequentialModel(userProfileWhite)
+            probas = SequentialModel2(userProfileWhite)
         elif model == 'svm':
             y_new = svmModel.predict_proba(userProfileWhite)
             _, probas = find_top_3(y_new.tolist()[0])
@@ -96,9 +96,16 @@ def upload_image():
             y_new = forestModel.predict_proba(userProfileWhite)
             _, probas = find_top_3(y_new.tolist()[0])
         elif model == 'ensemble':
-            svmWeight = float(request.form['svm-weight'])
-            knnWeight = float(request.form['knn-weight'])
-            forestWeight = float(request.form['dt-weight'])
+            svmWeight = request.form['svm-weight']
+            knnWeight = request.form['knn-weight']
+            forestWeight = request.form['dt-weight']
+            if svmWeight == '':
+                svmWeight = 0
+            if knnWeight == '':
+                knnWeight = 0
+            if forestWeight == '':
+                forestWeight = 0
+            svmWeight = float(svmWeight); knnWeight = float(knnWeight); forestWeight = float(forestWeight)
             if svmWeight + knnWeight + forestWeight != 1:
                 flash('Total weight should equal 1', 'error')
                 return redirect(request.url)
@@ -119,7 +126,7 @@ def upload_image():
         model = request.form['model']
         userHistWhite, userProfileWhite = getFeatures('static/uploads/img.png')
         if model == 'svm-ensemble':
-            probas = SequentialModel(userProfileWhite)
+            probas = SequentialModel2(userProfileWhite)
         elif model == 'svm':
             y_new = svmModel.predict_proba(userProfileWhite)
             _, probas = find_top_3(y_new.tolist()[0])
@@ -130,9 +137,19 @@ def upload_image():
             y_new = forestModel.predict_proba(userProfileWhite)
             _, probas = find_top_3(y_new.tolist()[0])
         elif model == 'ensemble':
-            svmWeight = float(request.form['svm-weight'])
-            knnWeight = float(request.form['knn-weight'])
-            forestWeight = float(request.form['dt-weight'])
+            svmWeight = request.form['svm-weight']
+            knnWeight = request.form['knn-weight']
+            forestWeight = request.form['dt-weight']
+            if svmWeight == '':
+                svmWeight = 0
+            if knnWeight == '':
+                knnWeight = 0
+            if forestWeight == '':
+                forestWeight = 0
+            svmWeight = float(svmWeight); knnWeight = float(knnWeight); forestWeight = float(forestWeight)
+            if svmWeight + knnWeight + forestWeight != 1:
+                flash('Total weight should equal 1', 'error')
+                return redirect(request.url)
             probas = Parallel_Ensemble(userProfileWhite, userHistWhite, svmModel, knnModel, forestModel, svmWeight, knnWeight, forestWeight)
         _, _, boundingRectInput = processUserImage('static/uploads/img.png')
         cv2.imwrite('static/uploads/uploadBox.png', boundingRectInput)

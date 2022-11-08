@@ -3,5 +3,7 @@
 
 ## Execution
  git clone https://github.com/daniazzam/IEA_Project_1
+ 
  cd src/Website
+ 
  run app.py

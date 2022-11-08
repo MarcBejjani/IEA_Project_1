@@ -1,7 +1,7 @@
 window.addEventListener('load', () => {
     const canvas = document.querySelector("#canvas");
     const button = document.querySelector('#button')
-    const drawButton = document.querySelector('#drawButton')
+    const clear = document.querySelector('#clear')
     const ctx = canvas.getContext('2d')
     ctx.fillStyle = 'white'
     ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -21,9 +21,10 @@ window.addEventListener('load', () => {
     }
     function draw(e){
         if(!painting) return;
-        ctx.lineWidth = 5;
+        ctx.lineWidth = document.getElementById('selWidth').value;
         ctx.lineCap = "round";
-
+        const color = document.getElementById('selColor').value;
+        ctx.strokeStyle = color;
         ctx.lineTo(e.clientX-widthOffset, e.clientY-heightOffset);
         ctx.stroke();
         ctx.beginPath()
@@ -46,13 +47,18 @@ window.addEventListener('load', () => {
         link.href = '/';
         link.click();
     };
+
+    function clearAll()
+    {
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
     //EventListeners
     canvas.addEventListener('mousedown', startPosition)
     canvas.addEventListener('mouseup', finishedPosition)
     canvas.addEventListener('mousemove', draw)
     button.addEventListener("click", doFunction);
-    drawButton.addEventListener("click", drawImage)
+    clear.addEventListener("click", clearAll)
 })
-
 
 

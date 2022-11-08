@@ -1,20 +1,126 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>Python Flask Upload and display image</title>
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
-        <link rel="stylesheet" href="{{url_for('static', filename='css/style.css')}}">
-</head>
-<body>
-        <h1>Draw or upload an image to guess the letter</h1>
+   <head>
+      <title>Python Flask Upload and display image</title>
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+      <link rel="stylesheet" href="{{url_for('static', filename='css/draw.css')}}">
+   </head>
+   <body>
+      <script src="{{url_for('static', filename='js/canvas.js')}}"></script>
+      <h1>Draw a character to upload</h1>
+      <div id="canvas_div" style="overflow-x: auto;">
+         <canvas id="canvas" width="900" height="360"></canvas>
+         <br>
+         <button onclick="javascript:clearArea();return false;">Clear Area</button>
+         <button id="button">Upload</button>
+         Line width :
+         <select id="selWidth">
+            <option value="10" selected="selected">10</option>
+            <option value="13">13</option>
+            <option value="15">15</option>
+         </select>
+         Color :
+         <select id="selColor">
+            <option value="black" selected="selected">black</option>
+            <option value="blue">blue</option>
+            <option value="red">red</option>
+            <option value="green">green</option>
+            <option value="gray">gray</option>
+         </select>
+      </div>
+      <script>
+         const canvas = document.getElementById('canvas');
+         const context = canvas.getContext('2d');
+         const viewport = window.visualViewport;
+         var offsetX;
+         var offsetY;
 
-    <div class="sketch">
-        <canvas id="canvas"></canvas>
-        <script src="{{url_for('static', filename='js/canvas.js')}}"></script>
-        <br>
-        <button method="post" id="button">Click me</button>
-    </div>
+         function startup() {
+           canvas.addEventListener('touchstart', handleStart);
+           canvas.addEventListener('touchend', handleEnd);
+           canvas.addEventListener('touchcancel', handleCancel);
+           canvas.addEventListener('touchmove', handleMove);
+         }
 
-</body>
+         document.addEventListener("DOMContentLoaded", startup);
+
+         const ongoingTouches = [];
+
+         function handleStart(evt) {
+           evt.preventDefault();
+           const touches = evt.changedTouches;
+           offsetX = canvas.getBoundingClientRect().left;
+           offsetY = canvas.getBoundingClientRect().top;
+           console.log(offsetX, offsetY)
+           for (let i = 0; i < touches.length; i++) {
+             ongoingTouches.push(copyTouch(touches[i]));
+           }
+         }
+
+         function handleMove(evt) {
+           evt.preventDefault();
+           const touches = evt.changedTouches;
+           for (let i = 0; i < touches.length; i++) {
+             const color = document.getElementById('selColor').value;
+             const idx = ongoingTouchIndexById(touches[i].identifier);
+             if (idx >= 0) {
+               context.beginPath();
+               context.moveTo(ongoingTouches[idx].clientX - offsetX, ongoingTouches[idx].clientY - offsetY);
+               context.lineTo(touches[i].clientX - offsetX, touches[i].clientY - offsetY);
+               context.lineWidth = document.getElementById('selWidth').value;
+               context.strokeStyle = color;
+               context.lineJoin = "round";
+               context.closePath();
+               context.stroke();
+               ongoingTouches.splice(idx, 1, copyTouch(touches[i]));  // swap in the new touch record
+             }
+           }
+         }
+
+         function handleEnd(evt) {
+           evt.preventDefault();
+           const touches = evt.changedTouches;
+           for (let i = 0; i < touches.length; i++) {
+             const color = document.getElementById('selColor').value;
+             let idx = ongoingTouchIndexById(touches[i].identifier);
+             if (idx >= 0) {
+               context.lineWidth = document.getElementById('selWidth').value;
+               context.fillStyle = color;
+               ongoingTouches.splice(idx, 1);  // remove it; we're done
+             }
+           }
+         }
+
+         function handleCancel(evt) {
+           evt.preventDefault();
+           const touches = evt.changedTouches;
+           for (let i = 0; i < touches.length; i++) {
+             let idx = ongoingTouchIndexById(touches[i].identifier);
+             ongoingTouches.splice(idx, 1);  // remove it; we're done
+           }
+         }
+
+         function copyTouch({ identifier, clientX, clientY }) {
+           return { identifier, clientX, clientY };
+         }
+
+         function ongoingTouchIndexById(idToFind) {
+           for (let i = 0; i < ongoingTouches.length; i++) {
+             const id = ongoingTouches[i].identifier;
+             if (id === idToFind) {
+               return i;
+             }
+           }
+           return -1;    // not found
+         }
+
+         function clearArea() {
+             context.setTransform(1, 0, 0, 1, 0, 0);
+             context.clearRect(0, 0, context.canvas.width, context.canvas.height);
+             context.fillStyle = 'white'
+             context.fillRect(0, 0, canvas.width, canvas.height);
+         }
+      </script>
+   </body>
 </html>

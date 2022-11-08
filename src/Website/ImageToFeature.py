@@ -2,7 +2,7 @@ import pandas as pd
 from src.FeatureExtraction import *
 
 
-def processImage(dir):
+def processUserImage(dir):
     image = cv2.imread(dir)
     image = BGR2BINARY(image, 3, 3)
     boundingBox = getBoundingRect(image)
@@ -14,40 +14,66 @@ def processImage(dir):
 
 def getFeatures(dir):
 
-    boundingBox, boxNoWhite, boxWhite = processImage(dir)
+    boundingBox, boxNoWhite, boxWhite = processUserImage(dir)
 
-    inputDict = {'BlackToWhite': getBlackToWhiteRatio(boundingBox),
+    inputHistWhite = {'BlackToWhite': getBlackToWhiteRatio(boundingBox),
                  'Aspect Ratio': getAspectRatio(boundingBox)}
+
+    inputProfileWhite = {'BlackToWhite': getBlackToWhiteRatio(boundingBox),
+                      'Aspect Ratio': getAspectRatio(boundingBox)}
 
     column_sum, row_sum = getProjectionHistogram(boxWhite)
     for idx1, value in enumerate(column_sum):
-        inputDict[f'Column Histogram {idx1}'] = value
+        inputHistWhite[f'Column Histogram {idx1}'] = value
 
     for idx1, value in enumerate(row_sum):
-        inputDict[f'Row Histogram {idx1}'] = value
+        inputHistWhite[f'Row Histogram {idx1}'] = value
+
+    column_sum, row_sum = getProjectionHistogram(boxNoWhite)
+    for idx1, value in enumerate(column_sum):
+        inputProfileWhite[f'Column Histogram {idx1}'] = value
+
+    for idx1, value in enumerate(row_sum):
+        inputProfileWhite[f'Row Histogram {idx1}'] = value
+
+    # Profile
+    bottom, top, left, right = getProfile(boxNoWhite)
+    for idx1, value in enumerate(bottom):
+        inputHistWhite[f'Bottom Profile {idx1}'] = value
+
+    for idx1, value in enumerate(top):
+        inputHistWhite[f'Top Profile {idx1}'] = value
+
+    for idx1, value in enumerate(left):
+        inputHistWhite[f'Left Profile {idx1}'] = value
+
+    for idx1, value in enumerate(right):
+        inputHistWhite[f'Right Profile {idx1}'] = value
 
     # Profile
     bottom, top, left, right = getProfile(boxWhite)
     for idx1, value in enumerate(bottom):
-        inputDict[f'Bottom Profile {idx1}'] = value
+        inputProfileWhite[f'Bottom Profile {idx1}'] = value
 
     for idx1, value in enumerate(top):
-        inputDict[f'Top Profile {idx1}'] = value
+        inputProfileWhite[f'Top Profile {idx1}'] = value
 
     for idx1, value in enumerate(left):
-        inputDict[f'Left Profile {idx1}'] = value
+        inputProfileWhite[f'Left Profile {idx1}'] = value
 
     for idx1, value in enumerate(right):
-        inputDict[f'Right Profile {idx1}'] = value
+        inputProfileWhite[f'Right Profile {idx1}'] = value
 
     # Hog
     image_hog = getHOG(boundingBox)
     for idx1, value in enumerate(image_hog):
-        inputDict[f'HOG {idx1}'] = value
+        inputHistWhite[f'HOG {idx1}'] = value
+        inputProfileWhite[f'HOG {idx1}'] = value
 
-    inputDict = pd.DataFrame(inputDict, index=[0])
+    inputHistWhite = pd.DataFrame(inputHistWhite, index=[0])
+    inputProfileWhite = pd.DataFrame(inputProfileWhite, index=[0])
 
-    return inputDict
+    return inputHistWhite, inputProfileWhite
 
 
 

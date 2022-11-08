@@ -10,6 +10,7 @@ def getBlackToWhiteRatio(image):
     return blackToWhiteRatio
 
 
+
 # Unused Features
 '''
 def getBlackRatio(image):
@@ -56,8 +57,6 @@ def verticalSymmetry(image):
     return vertical_Symmetry
 
 '''
-
-
 def getAspectRatio(image):
     w, h = image.shape
     aspectRatio = h / w
@@ -81,8 +80,10 @@ def getProjectionHistogram(image):
     # row_sum = normalize_2d(row_sum).flatten()
 
     # Normalize by getting a ratio between 0 and 1
-    column_sum = column_sum / (30 * 255)
-    row_sum = row_sum / (30 * 255)
+
+    column_sum = column_sum /(30*255)
+    row_sum = row_sum /(30*255)
+
 
     return column_sum, row_sum
 
@@ -178,6 +179,7 @@ def getListOfCharacters():
 def featuresToCSV(listOfCharacters):  # directory of the cropped images
     dirname, filename = os.path.split(os.path.abspath(__file__))
 
+
     features = []
 
     for idx, img in tqdm(enumerate(listOfCharacters)):
@@ -243,6 +245,22 @@ def saveToCSV():
     list_of_Characters = getListOfCharacters()
     featuresToCSV(list_of_Characters)
 
+def main():
+    dirname, filename = os.path.split(os.path.abspath(__file__))
+    listOfCharacters = getListOfCharacters()
+    image_name = listOfCharacters[1]['image']  # image name
+    image_name = image_name[image_name.index('/') + 1:]
+
+    dirResizedWhite = dirname+f'\SquaredWithWhiteAdded\{image_name}'
+    dirResizedNoWhite = dirname+f'\SquaredWithNoWhiteAdded\{image_name}'
+    dirBounding = dirname+f'\BoundingBoxes\{image_name}'
+
+    image = cv2.imread(dirResizedWhite)
+    image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+    column_sum, row_sum = getProjectionHistogram(image)
+    print(column_sum)
+    print(row_sum)
 
 def main():
     dirname, filename = os.path.split(os.path.abspath(__file__))
